@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="tutorialROSOpenCV" root=".">
+      <df name="bin">
+      </df>
+      <df name="CMakeFiles">
+        <df name="blob.dir">
+          <df name="src">
+            <df name="cvblobs8.3_linux">
+            </df>
+          </df>
+        </df>
+        <df name="cam1_labrob14_pub.dir">
+          <df name="src">
+            <df name="v2nodes">
+            </df>
+          </df>
+        </df>
+        <df name="cam2_labrob14_pub.dir">
+          <df name="src">
+            <df name="v2nodes">
+            </df>
+          </df>
+        </df>
+        <df name="clean-test-results.dir">
+        </df>
+        <df name="CompilerIdC">
+          <in>CMakeCCompilerId.c</in>
+        </df>
+        <df name="CompilerIdCXX">
+          <in>CMakeCXXCompilerId.cpp</in>
+        </df>
+        <df name="list_fusioner.dir">
+          <df name="src">
+          </df>
+        </df>
+        <df name="ROSBUILD_genmsg_cpp.dir">
+        </df>
+        <df name="ROSBUILD_genmsg_lisp.dir">
+        </df>
+        <df name="ROSBUILD_genmsg_py.dir">
+        </df>
+        <df name="ROSBUILD_gensrv_cpp.dir">
+        </df>
+        <df name="ROSBUILD_gensrv_lisp.dir">
+        </df>
+        <df name="rosbuild_precompile.dir">
+        </df>
+        <df name="rosbuild_premsgsrvgen.dir">
+        </df>
+        <df name="rospack_genmsg.dir">
+        </df>
+        <df name="rospack_genmsg_all.dir">
+        </df>
+        <df name="rospack_genmsg_libexe.dir">
+        </df>
+        <df name="rospack_gensrv.dir">
+        </df>
+        <df name="test-future.dir">
+        </df>
+        <df name="test-results-run.dir">
+        </df>
+        <df name="test-results.dir">
+        </df>
+        <df name="test.dir">
+        </df>
+        <df name="tests.dir">
+        </df>
+      </df>
+      <df name="launch">
+      </df>
+      <df name="lib">
+      </df>
+      <df name="msg">
+      </df>
+      <df name="msg_gen">
+        <df name="cpp">
+          <df name="include">
+            <df name="tutorialROSOpenCV">
+              <in>Stringts.h</in>
+            </df>
+          </df>
+        </df>
+        <df name="lisp">
+        </df>
+      </df>
+      <df name="src">
+        <df name="cvblobs8.3_linux">
+          <df name="testBlobs">
+            <in>BlobContour.h</in>
+            <in>BlobLibraryConfiguration.h</in>
+            <in>BlobOperators.h</in>
+            <in>BlobResult.h</in>
+            <in>ComponentLabeling.h</in>
+            <in>blob.h</in>
+            <in>main.cpp</in>
+          </df>
+          <in>BlobContour.cpp</in>
+          <in>BlobContour.h</in>
+          <in>BlobLibraryConfiguration.h</in>
+          <in>BlobOperators.cpp</in>
+          <in>BlobOperators.h</in>
+          <in>BlobProperties.cpp</in>
+          <in>BlobProperties.h</in>
+          <in>BlobResult.cpp</in>
+          <in>BlobResult.h</in>
+          <in>ComponentLabeling.cpp</in>
+          <in>ComponentLabeling.h</in>
+          <in>blob.cpp</in>
+          <in>blob.h</in>
+        </df>
+        <df name="old">
+          <in>main.cpp</in>
+          <in>map.h</in>
+        </df>
+        <df name="old_publisher">
+          <in>image_pub.cpp</in>
+          <in>image_pub_labrob14.cpp</in>
+          <in>image_pub_sciame.cpp</in>
+        </df>
+        <df name="track">
+          <df name="msg">
+          </df>
+        </df>
+        <df name="tutorialROSOpenCV">
+          <df name="msg">
+          </df>
+        </df>
+        <df name="v2nodes">
+          <in>cam1_labrob14_pub.cpp</in>
+          <in>cam2_labrob14_pub.cpp</in>
+          <in>map_1280_1024.cpp</in>
+          <in>map_1280_1024.h</in>
+          <in>map_640_480.cpp</in>
+          <in>map_640_480.h</in>
+          <in>sciame_pub.cpp</in>
+        </df>
+        <in>clock.cpp</in>
+        <in>list_fusioner.cpp</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>/opt/ros/fuerte/stacks/diagnostics/self_test/srv/cpp</pElem>
+              <pElem>/opt/ros/fuerte/stacks/bosch_drivers/usb_cam/include</pElem>
+              <pElem>/opt/ros/fuerte/include</pElem>
+              <pElem>/opt/ros/fuerte/stacks/diagnostics/self_test/include</pElem>
+              <pElem>.</pElem>
+              <pElem>include</pElem>
+              <pElem>/opt/ros/fuerte/stacks/diagnostics/diagnostic_updater/include</pElem>
+              <pElem>/opt/ros/fuerte/stacks/image_common/image_transport/include</pElem>
+              <pElem>/opt/ros/fuerte/stacks/vision_opencv/cv_bridge/include</pElem>
+              <pElem>src/cvblobs8.3_linux</pElem>
+              <pElem>/opt/ros/fuerte/stacks/bosch_drivers/usb_cam/msg/cpp</pElem>
+              <pElem>/opt/ros/fuerte/include/opencv</pElem>
+              <pElem>/opt/ros/fuerte/stacks/pluginlib</pElem>
+              <pElem>/opt/ros/fuerte/stacks/pluginlib/include</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>ROS_PACKAGE_NAME="tutorialROSOpenCV"</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <folder path="tutorialROSOpenCV/src/cvblobs8.3_linux">
+        <ccTool>
+          <preprocessorList>
+            <Elem>blob_EXPORTS</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <item path="src/clock.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/BlobContour.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/BlobOperators.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/BlobProperties.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/BlobResult.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/ComponentLabeling.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/blob.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>msg_gen/cpp/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="src/cvblobs8.3_linux/testBlobs/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+      <item path="src/list_fusioner.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
