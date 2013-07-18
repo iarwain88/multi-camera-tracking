@@ -31,7 +31,7 @@
 #include <opencv2/imgproc/imgproc.hpp>  // Gaussian Blur
 #include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
 #include <opencv2/highgui/highgui.hpp>  // OpenCV window I/O
- #include "std_msgs/String.h"
+#include "std_msgs/String.h"
 #include <sstream>
 #include "map_640_480.h"
 #include <string>
@@ -50,9 +50,9 @@ const int robMax = 6;
 using namespace std;
 using namespace boost;
 using namespace cv;
- namespace enc = sensor_msgs::image_encodings;
+namespace enc = sensor_msgs::image_encodings;
 
- typedef struct {
+typedef struct {
     CvPoint2D32f head;
     CvPoint2D32f tail;
     CvPoint2D32f center;
@@ -74,48 +74,49 @@ typedef struct {
 // Currently Available Robots
 RobotList avRobList;
 RobotList potRobList;
-  int areaBlob = 50;
-  int epsilon = 50;
+int areaBlob = 50;
+int epsilon = 50;
 
 
 float distMatrix[robMax][robMax];
 float minDistMatrix[robMax][robMax];
- 
- rosgraph_msgs::Clock framets;
- tutorialROSOpenCV::Stringts msg;
- string ss,ss1,ss2,ss3,ss4,ss5,ss6;
-    
-    void makelistRobot(){
-    
-   ss1 = boost::str(boost::format("%f,%f,%f,%f,%f,") %potRobList.robList[0].id %potRobList.robList[0].coord.x %potRobList.robList[0].coord.y %potRobList.robList[0].lost %potRobList.robList[0].active );
-   ss2 = boost::str(boost::format("%f,%f,%f,%f,%f,") %potRobList.robList[1].id %potRobList.robList[1].coord.x %potRobList.robList[1].coord.y %potRobList.robList[1].lost %potRobList.robList[1].active );
-   ss3 = boost::str(boost::format("%f,%f,%f,%f,%f,") %potRobList.robList[2].id %potRobList.robList[2].coord.x %potRobList.robList[2].coord.y %potRobList.robList[2].lost %potRobList.robList[2].active );
-   ss4 = boost::str(boost::format("%f,%f,%f,%f,%f,") %potRobList.robList[3].id %potRobList.robList[3].coord.x %potRobList.robList[3].coord.y %potRobList.robList[3].lost %potRobList.robList[3].active );
-   ss5 = boost::str(boost::format("%f,%f,%f,%f,%f,") %potRobList.robList[4].id %potRobList.robList[4].coord.x %potRobList.robList[4].coord.y %potRobList.robList[4].lost %potRobList.robList[4].active );
-   ss6 = boost::str(boost::format("%f,%f,%f,%f,%f")  %potRobList.robList[5].id %potRobList.robList[5].coord.x %potRobList.robList[5].coord.y %potRobList.robList[5].lost %potRobList.robList[5].active );
-   
-   ss =ss1+ss2+ss3+ss4+ss5+ss6; //dati dei robot 1 e 2 nella stessa stringa per poterli trasmettere
-   msg.data = ss;
-   
-   msg.stamp =   framets.clock; //associo alla lista robot il timestamp del frame relativo
-   
-   // %Tag(ROSCONSOLE)%
- ROS_INFO("%s", msg.data.c_str());
-// %EndTag(ROSCONSOLE)%
-  
-for (int i=0; i<robMax;i++)
-       printf("Robot %d : (%f, %f, l: %d,a: %d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].lost, potRobList.robList[i].active);
 
-    
+rosgraph_msgs::Clock framets;
+tutorialROSOpenCV::Stringts msg;
+string ss, ss1, ss2, ss3, ss4, ss5, ss6;
+
+void makelistRobot() {
+
+    ss1 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[0].id % potRobList.robList[0].coord.x % potRobList.robList[0].coord.y % potRobList.robList[0].lost % potRobList.robList[0].active % potRobList.robList[0].center.x % potRobList.robList[0].center.y);
+    ss2 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[1].id % potRobList.robList[1].coord.x % potRobList.robList[1].coord.y % potRobList.robList[1].lost % potRobList.robList[1].active % potRobList.robList[1].center.x % potRobList.robList[1].center.y);
+    ss3 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[2].id % potRobList.robList[2].coord.x % potRobList.robList[2].coord.y % potRobList.robList[2].lost % potRobList.robList[2].active % potRobList.robList[2].center.x % potRobList.robList[2].center.y);
+    ss4 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[3].id % potRobList.robList[3].coord.x % potRobList.robList[3].coord.y % potRobList.robList[3].lost % potRobList.robList[3].active % potRobList.robList[3].center.x % potRobList.robList[3].center.y);
+    ss5 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[4].id % potRobList.robList[4].coord.x % potRobList.robList[4].coord.y % potRobList.robList[4].lost % potRobList.robList[4].active % potRobList.robList[4].center.x % potRobList.robList[4].center.y);
+    ss6 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f") % potRobList.robList[5].id % potRobList.robList[5].coord.x % potRobList.robList[5].coord.y % potRobList.robList[5].lost % potRobList.robList[5].active % potRobList.robList[5].center.x % potRobList.robList[5].center.y);
+
+    ss = ss1 + ss2 + ss3 + ss4 + ss5 + ss6; //dati dei robot 1 e 2 nella stessa stringa per poterli trasmettere
+    msg.data = ss;
+
+    msg.stamp = framets.clock; //associo alla lista robot il timestamp del frame relativo
+
+    // %Tag(ROSCONSOLE)%
+    ROS_INFO("%s", msg.data.c_str());
+    // %EndTag(ROSCONSOLE)%
+
+    for (int i = 0; i < robMax; i++)
+        printf("Robot %d : (%f, %f, l: %d,a: %d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].lost, potRobList.robList[i].active);
+
+
 }
-    
-        // %Tag(CALLBACK)%
-void roblistCallback(const std_msgs::String::ConstPtr& msg){
-    
 
-  vector <string> fields;
+// %Tag(CALLBACK)%
 
-  split_regex( fields, msg->data.c_str(), regex( "," ) );
+void roblistCallback(const std_msgs::String::ConstPtr& msg) {
+
+
+    vector <string> fields;
+
+    split_regex(fields, msg->data.c_str(), regex(","));
 
     avRobList.robList[0].id = atoi(fields[0].c_str());
     avRobList.robList[0].coord.x = atof(fields[1].c_str());
@@ -147,14 +148,13 @@ void roblistCallback(const std_msgs::String::ConstPtr& msg){
     avRobList.robList[5].coord.y = atof(fields[27].c_str());
     avRobList.robList[5].lost = atoi(fields[28].c_str());
     avRobList.robList[5].active = atoi(fields[29].c_str());
-         
-  
-//      for (int i=0; i<robMax;i++)
-//    printf("Robot %d : (%f, %f, %f)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
-//   
+
+
+    //      for (int i=0; i<robMax;i++)
+    //    printf("Robot %d : (%f, %f, %f)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
+    //   
 }
 // %EndTag(CALLBACK)%
-
 
 Robot createRobot(CvPoint2D32f h, CvPoint2D32f t) {
 
@@ -167,10 +167,10 @@ Robot createRobot(CvPoint2D32f h, CvPoint2D32f t) {
 
     rob.active = 1;
     rob.id = -1;
-    
-     CvPoint2D32f h_c = getGlobalCoord(h.x, h.y);
+
+    CvPoint2D32f h_c = getGlobalCoord(h.x, h.y);
     CvPoint2D32f t_c = getGlobalCoord(t.x, t.y);
-    
+
     rob.orientation = cvFastArctan((h_c.y - t_c.y), h_c.x - t_c.x);
 
     rob.coord = getGlobalCoord(rob.center.x, rob.center.y);
@@ -178,15 +178,13 @@ Robot createRobot(CvPoint2D32f h, CvPoint2D32f t) {
 
 #ifdef DEBUG_H    
     //printf("Head: %2.2f %2.2f\n", h.x, h.y);
-   // printf("Tail: %2.2f %2.2f\n", t.x, t.y);
-  //  printf("Center: %2.2f %2.2f\n", rob.center.x, rob.center.y);
+    // printf("Tail: %2.2f %2.2f\n", t.x, t.y);
+    //  printf("Center: %2.2f %2.2f\n", rob.center.x, rob.center.y);
 #endif
 
     return rob;
 
 }
-
-
 
 void printRobot(Robot rob) {
 
@@ -392,7 +390,7 @@ int checkDistMarker(float a, float b) {
 CvScalar lowRed = cvScalar(0, 118, 154);
 CvScalar highRed = cvScalar(60, 256, 256);
 
-CvScalar lowGreen = cvScalar(38,65, 150);
+CvScalar lowGreen = cvScalar(38, 65, 150);
 CvScalar highGreen = cvScalar(92, 152, 256);
 //****************************************  
 
@@ -476,7 +474,7 @@ IplImage* blobDetection2(IplImage* imgThreshRed, IplImage* imgThreshGreen) {
     }
 
     // Populating the list of potential robots
-    
+
     potRobList.robNum = 0;
 
     for (i = 0; i < robMax; i++)
@@ -533,7 +531,7 @@ IplImage* blobDetection2(IplImage* imgThreshRed, IplImage* imgThreshGreen) {
 
     // Matching The List of Potential Robots with previous List of Robots
     //    updateRobotListAndrea(&avRobList, potRobList);
-  //  updateRobotList(&avRobList, potRobList);
+    //  updateRobotList(&avRobList, potRobList);
     makelistRobot();
 
     /*
@@ -560,9 +558,6 @@ IplImage* blobDetection2(IplImage* imgThreshRed, IplImage* imgThreshGreen) {
 
 }
 
-
-
-
 int main(int argc, char **argv) {
     //name of the ros node
     ros::init(argc, argv, "webcam2_pub_labrob14");
@@ -579,13 +574,13 @@ int main(int argc, char **argv) {
     //Use method of ImageTransport to create image publisher
 
     image_transport::Publisher pub_f;
-image_transport::Publisher pub_or;
+    image_transport::Publisher pub_or;
 
 
     //Create an ImageTransport instance, initializing it with our NodeHandle.
 
     image_transport::ImageTransport it_f(nh);
-     image_transport::ImageTransport it_or(nh);
+    image_transport::ImageTransport it_or(nh);
     //    // %Tag(SUBSCRIBER)%
     //  ros::Subscriber sub = nh.subscribe("robList", 100, roblistCallback);
     //// %EndTag(SUBSCRIBER)%
@@ -595,8 +590,8 @@ image_transport::Publisher pub_or;
 
     //advertise the video on the path below
 
-    pub_f = it_f.advertise("camera2_labrob14/blobs", 1);
-     pub_or = it_or.advertise("camera2_labrob14/RGB", 1);
+    pub_f = it_f.advertise("camera2_labrob14/blobs", 100);
+    pub_or = it_or.advertise("camera2_labrob14/RGB", 100);
 
     avRobList.robNum = 0;
     avRobList.init = 1;
@@ -609,12 +604,12 @@ image_transport::Publisher pub_or;
     // variable for webcam
     CvCapture* capture = 0;
     IplImage* frame = 0;
-      IplImage* frame1 = 0;
+    IplImage* frame1 = 0;
 
     //TODO loading calibration map
     char *name = "Map_c2.txt";
     // Load Map
-   InitPixelMap(name);
+    InitPixelMap(name);
 
     //start capturing from webcam, 0 is for the default webcam /dev/video0
     capture = cvCaptureFromCAM(0);
@@ -623,13 +618,13 @@ image_transport::Publisher pub_or;
         return -1;
     }
 
-     cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, 640);
+    cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, 640);
     cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, 480);
 
     //creating an output video and setting it to be handly resizable
     cvNamedWindow("Output", CV_WINDOW_NORMAL);
     cvResizeWindow("Output", 320, 280);
-     cvNamedWindow("input", CV_WINDOW_NORMAL);
+    cvNamedWindow("input", CV_WINDOW_NORMAL);
     cvResizeWindow("input", 320, 280);
 
 
@@ -637,13 +632,13 @@ image_transport::Publisher pub_or;
     frame = cvQueryFrame(capture);
     frame = cvQueryFrame(capture);
 
-ros::Rate r(20);
+    ros::Rate r(20);
 
 
     while (1) {
 
         frame = cvQueryFrame(capture);
-       
+
         framets.clock = ros::Time::now();
         if (frame == 0) {
             cout << "Error in frame querying" << endl;
@@ -652,20 +647,20 @@ ros::Rate r(20);
 
         frame = cvCloneImage(frame);
         frame1 = cvCloneImage(frame);
-        
-        //to rotate image
-//                Mat source(frame);
-        
-//                
-//Point2f src_center(source.cols/2.0, source.rows/2.0);
-//Mat rot_mat = getRotationMatrix2D(src_center, 90, 1.0);
-//Mat dst;
-//warpAffine(source, dst, rot_mat, source.size());
 
-// Open the window
-//cv::namedWindow("rotated");
- //IplImage* im_rotated = &dst.operator IplImage(); 
-         
+        //to rotate image
+        //                Mat source(frame);
+
+        //                
+        //Point2f src_center(source.cols/2.0, source.rows/2.0);
+        //Mat rot_mat = getRotationMatrix2D(src_center, 90, 1.0);
+        //Mat dst;
+        //warpAffine(source, dst, rot_mat, source.size());
+
+        // Open the window
+        //cv::namedWindow("rotated");
+        //IplImage* im_rotated = &dst.operator IplImage(); 
+
         cvSmooth(frame, frame, CV_GAUSSIAN, 3, 3); //smooth the original image using Gaussian kernel
 
 
@@ -684,34 +679,36 @@ ros::Rate r(20);
         cvSmooth(imgThreshGreen, imgThreshGreen, CV_GAUSSIAN, 3, 3); //smooth the binary image using Gaussian kernel
 
 
-        
+
         IplImage* imgFinal = blobDetection2(imgThreshRed, imgThreshGreen);
 
         CvPoint2D32f cordin;
-        cordin.x= potRobList.robList[0].center.x;
-        cordin.y= potRobList.robList[0].center.y;
-        
-//        
-      CvPoint point  = cvPointFrom32f(cordin); 
-           //printf("pix %.2f,%.2f\n", potRobList.robList[0].center.x,potRobList.robList[0].center.y);
-           // printf("pix %.2f,%.2f\n", potRobList.robList[1].center.x,potRobList.robList[1].center.y);
-    cvCircle(frame1,point,10, cvScalar(0, 0, 255), 10, 8, 0);
-//    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
+        cordin.x = potRobList.robList[0].center.x;
+        cordin.y = potRobList.robList[0].center.y;
 
-       
-    
+        //        
+        CvPoint point = cvPointFrom32f(cordin);
+        //printf("pix %.2f,%.2f\n", potRobList.robList[0].center.x,potRobList.robList[0].center.y);
+        // printf("pix %.2f,%.2f\n", potRobList.robList[1].center.x,potRobList.robList[1].center.y);
+        cvCircle(frame1, point, 10, cvScalar(0, 0, 255), 10, 8, 0);
+        //    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
+
+
         cvSmooth(imgFinal, imgFinal, CV_GAUSSIAN, 3, 3); //smooth the binary image using Gaussian kernel
 
         cvShowImage("Output", imgFinal);
-        
-       
-        
 
 
-// Display the image m in this window
-//cv::imshow("rotated", dst);
+        // cv::namedWindow("foo");
 
-         cvShowImage("input", frame1);
+        // Display the image m in this window
+        //cv::imshow("foo", image11);
+
+
+        // Display the image m in this window
+        //cv::imshow("rotated", dst);
+
+        cvShowImage("input", frame1);
 
         //cv::Mat image(imgHSV); 
 
@@ -725,19 +722,19 @@ ros::Rate r(20);
         out_msg.image = image; // Your cv::Mat
 
         pub_f.publish(out_msg.toImageMsg());
-        
+
         //  pub_r.publish(out_msg.toImageMsg());
 
 
-        
-              
-                        //cv::Mat image2(frame);  
-//               // out_msg.header   = cv_ptr->header; // Same timestamp and tf frame as input image
-//                out_msg.encoding = sensor_msgs::image_encodings::BGR8; // Or whatever
-//                out_msg.image    = image2; // Your cv::Mat
-//                        
-//          pub_or.publish(out_msg.toImageMsg());
-        
+
+
+        cv::Mat image2(frame);
+        // out_msg.header   = cv_ptr->header; // Same timestamp and tf frame as input image
+        out_msg.encoding = sensor_msgs::image_encodings::BGR8; // Or whatever
+        out_msg.image = image2; // Your cv::Mat
+
+        pub_or.publish(out_msg.toImageMsg());
+
 
 
 
@@ -752,8 +749,8 @@ ros::Rate r(20);
         cvReleaseImage(&imgThreshGreen);
         cvReleaseImage(&imgFinal);
         cvReleaseImage(&frame);
-         cvReleaseImage(&frame1);
-          // cvReleaseImage(&im_rotated);
+        cvReleaseImage(&frame1);
+        // cvReleaseImage(&im_rotated);
 
 
         //   cvReleaseImage(&imgThresh);

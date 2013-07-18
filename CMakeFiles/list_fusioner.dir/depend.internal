@@ -10,7 +10,9 @@ CMakeFiles/list_fusioner.dir/src/list_fusioner.o
  /opt/ros/fuerte/include/opencv2/calib3d/calib3d.hpp
  /opt/ros/fuerte/include/opencv2/core/core.hpp
  /opt/ros/fuerte/include/opencv2/core/core_c.h
+ /opt/ros/fuerte/include/opencv2/core/devmem2d.hpp
  /opt/ros/fuerte/include/opencv2/core/eigen.hpp
+ /opt/ros/fuerte/include/opencv2/core/gpumat.hpp
  /opt/ros/fuerte/include/opencv2/core/internal.hpp
  /opt/ros/fuerte/include/opencv2/core/mat.hpp
  /opt/ros/fuerte/include/opencv2/core/operations.hpp
@@ -49,6 +51,7 @@ CMakeFiles/list_fusioner.dir/src/list_fusioner.o
  /opt/ros/fuerte/include/opencv2/flann/sampling.h
  /opt/ros/fuerte/include/opencv2/flann/saving.h
  /opt/ros/fuerte/include/opencv2/flann/timer.h
+ /opt/ros/fuerte/include/opencv2/gpu/gpu.hpp
  /opt/ros/fuerte/include/opencv2/highgui/highgui.hpp
  /opt/ros/fuerte/include/opencv2/highgui/highgui_c.h
  /opt/ros/fuerte/include/opencv2/imgproc/imgproc.hpp
@@ -56,6 +59,19 @@ CMakeFiles/list_fusioner.dir/src/list_fusioner.o
  /opt/ros/fuerte/include/opencv2/imgproc/types_c.h
  /opt/ros/fuerte/include/opencv2/legacy/compat.hpp
  /opt/ros/fuerte/include/opencv2/objdetect/objdetect.hpp
+ /opt/ros/fuerte/include/opencv2/opencv_modules.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/blenders.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/camera.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/exposure_compensate.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/matchers.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/motion_estimators.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/seam_finders.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/util.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/util_inl.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/warpers.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/detail/warpers_inl.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/stitcher.hpp
+ /opt/ros/fuerte/include/opencv2/stitching/warpers.hpp
  /opt/ros/fuerte/include/opencv2/video/tracking.hpp
  /opt/ros/fuerte/include/ros/advertise_options.h
  /opt/ros/fuerte/include/ros/advertise_service_options.h
@@ -110,5 +126,20 @@ CMakeFiles/list_fusioner.dir/src/list_fusioner.o
  /opt/ros/fuerte/include/ros/wall_timer_options.h
  /opt/ros/fuerte/include/rosconsole/macros_generated.h
  /opt/ros/fuerte/include/rosgraph_msgs/Clock.h
+ /opt/ros/fuerte/include/sensor_msgs/CameraInfo.h
+ /opt/ros/fuerte/include/sensor_msgs/Image.h
+ /opt/ros/fuerte/include/sensor_msgs/RegionOfInterest.h
+ /opt/ros/fuerte/include/sensor_msgs/image_encodings.h
+ /opt/ros/fuerte/include/std_msgs/Header.h
  /opt/ros/fuerte/include/std_msgs/String.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/camera_publisher.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/camera_subscriber.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/exception.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/image_transport.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/loader_fwds.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/publisher.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/single_subscriber_publisher.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/subscriber.h
+ /opt/ros/fuerte/stacks/image_common/image_transport/include/image_transport/transport_hints.h
+ /opt/ros/fuerte/stacks/vision_opencv/cv_bridge/include/cv_bridge/cv_bridge.h
  msg_gen/cpp/include/tutorialROSOpenCV/Stringts.h

@@ -2,6 +2,8 @@
 <configurationDescriptor version="84">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df name="tutorialROSOpenCV" root=".">
+      <df name=".git">
+      </df>
       <df name="bin">
       </df>
       <df name="CMakeFiles">
@@ -10,63 +12,178 @@
             <df name="cvblobs8.3_linux">
             </df>
           </df>
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.make</in>
+          <in>flags.make</in>
+          <in>link.txt</in>
+          <in>progress.make</in>
         </df>
         <df name="cam1_labrob14_pub.dir">
           <df name="src">
             <df name="v2nodes">
             </df>
           </df>
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.make</in>
+          <in>flags.make</in>
+          <in>link.txt</in>
+          <in>progress.make</in>
         </df>
         <df name="cam2_labrob14_pub.dir">
           <df name="src">
             <df name="v2nodes">
             </df>
           </df>
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.make</in>
+          <in>flags.make</in>
+          <in>link.txt</in>
+          <in>progress.make</in>
         </df>
         <df name="clean-test-results.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="CompilerIdC">
           <in>CMakeCCompilerId.c</in>
+          <in>a.out</in>
         </df>
         <df name="CompilerIdCXX">
           <in>CMakeCXXCompilerId.cpp</in>
+          <in>a.out</in>
         </df>
         <df name="list_fusioner.dir">
           <df name="src">
           </df>
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.make</in>
+          <in>flags.make</in>
+          <in>link.txt</in>
+          <in>progress.make</in>
         </df>
         <df name="ROSBUILD_genmsg_cpp.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="ROSBUILD_genmsg_lisp.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="ROSBUILD_genmsg_py.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.internal</in>
+          <in>depend.make</in>
+          <in>progress.make</in>
         </df>
         <df name="ROSBUILD_gensrv_cpp.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="ROSBUILD_gensrv_lisp.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="rosbuild_precompile.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="rosbuild_premsgsrvgen.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.internal</in>
+          <in>depend.make</in>
+          <in>progress.make</in>
         </df>
         <df name="rospack_genmsg.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="rospack_genmsg_all.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="rospack_genmsg_libexe.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>depend.internal</in>
+          <in>depend.make</in>
+          <in>progress.make</in>
         </df>
         <df name="rospack_gensrv.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="test-future.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="test-results-run.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="test-results.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="test.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
         <df name="tests.dir">
+          <in>DependInfo.cmake</in>
+          <in>build.make</in>
+          <in>cmake_clean.cmake</in>
+          <in>progress.make</in>
         </df>
+        <in>CMakeCCompiler.cmake</in>
+        <in>CMakeCXXCompiler.cmake</in>
+        <in>CMakeDirectoryInformation.cmake</in>
+        <in>CMakeOutput.log</in>
+        <in>CMakeRuleHashes.txt</in>
+        <in>CMakeSystem.cmake</in>
+        <in>Makefile.cmake</in>
+        <in>Makefile2</in>
+        <in>TargetDirectories.txt</in>
+        <in>cmake.check_cache</in>
+        <in>progress.marks</in>
       </df>
       <df name="launch">
       </df>
@@ -83,7 +200,12 @@
           </df>
         </df>
         <df name="lisp">
+          <in>Stringts.lisp</in>
+          <in>_package.lisp</in>
+          <in>_package_Stringts.lisp</in>
+          <in>tutorialROSOpenCV-msg.asd</in>
         </df>
+        <in>generated</in>
       </df>
       <df name="src">
         <df name="cvblobs8.3_linux">
@@ -125,6 +247,8 @@
         </df>
         <df name="tutorialROSOpenCV">
           <df name="msg">
+            <in>_Stringts.py</in>
+            <in>__init__.py</in>
           </df>
         </df>
         <df name="v2nodes">

@@ -14,7 +14,8 @@
 
 //Includes all the headers necessary to use the most common public pieces of the ROS system.
 #include <ros/ros.h>
-
+//Use cv_bridge to convert between ROS and OpenCV Image formats
+#include <cv_bridge/cv_bridge.h>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -24,19 +25,26 @@
 #include <opencv2/highgui/highgui.hpp>  // OpenCV window I/O
 #include "std_msgs/String.h"
 #include <sstream>
-
+#include <image_transport/image_transport.h>
+//Include some useful constants for image encoding. Refer to: http://www.ros.org/doc/api/sensor_msgs/html/namespacesensor__msgs_1_1image__encodings.html for more info.
+#include <sensor_msgs/image_encodings.h>
 #include <string>
 #include <cv.h>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/regex.hpp>
 #include <vector>
 #include <highgui.h>
+#include "opencv2/stitching/stitcher.hpp"
 
 #include <rosgraph_msgs/Clock.h>
 #include <tutorialROSOpenCV/Stringts.h>
 #define MAX_LOST  100000000
 using namespace std;
 using namespace boost;
+using namespace cv;
+
+//Store all constants for image encodings in the enc namespace to be used later.
+namespace enc = sensor_msgs::image_encodings;
 const int robMax = 6;
 
 typedef struct {
@@ -87,6 +95,9 @@ string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 
 
 
+IplImage* frame_c1 = 0;
+IplImage* frame_c2 = 0;
+
 
 
 // %Tag(CALLBACK)%
@@ -98,36 +109,50 @@ void roblistCallback1(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
 
     split_regex(fields, msg->data.c_str(), regex(","));
 
-    potRobList1.robList[0].id = atoi(fields[0].c_str());
-    potRobList1.robList[0].coord.x = atof(fields[1].c_str());
-    potRobList1.robList[0].coord.y = atof(fields[2].c_str());
-    potRobList1.robList[0].lost = atoi(fields[3].c_str());
-    potRobList1.robList[0].active = atoi(fields[4].c_str());
-    potRobList1.robList[1].id = atoi(fields[5].c_str());
-    potRobList1.robList[1].coord.x = atof(fields[6].c_str());
-    potRobList1.robList[1].coord.y = atof(fields[7].c_str());
-    potRobList1.robList[1].lost = atoi(fields[8].c_str());
-    potRobList1.robList[1].active = atoi(fields[9].c_str());
-    potRobList1.robList[2].id = atoi(fields[10].c_str());
-    potRobList1.robList[2].coord.x = atof(fields[11].c_str());
-    potRobList1.robList[2].coord.y = atof(fields[12].c_str());
-    potRobList1.robList[2].lost = atoi(fields[13].c_str());
-    potRobList1.robList[2].active = atoi(fields[14].c_str());
-    potRobList1.robList[3].id = atoi(fields[15].c_str());
-    potRobList1.robList[3].coord.x = atof(fields[16].c_str());
-    potRobList1.robList[3].coord.y = atof(fields[17].c_str());
-    potRobList1.robList[3].lost = atoi(fields[18].c_str());
-    potRobList1.robList[3].active = atoi(fields[19].c_str());
-    potRobList1.robList[4].id = atoi(fields[20].c_str());
-    potRobList1.robList[4].coord.x = atof(fields[21].c_str());
-    potRobList1.robList[4].coord.y = atof(fields[22].c_str());
-    potRobList1.robList[4].lost = atoi(fields[23].c_str());
-    potRobList1.robList[4].active = atoi(fields[24].c_str());
-    potRobList1.robList[5].id = atoi(fields[25].c_str());
-    potRobList1.robList[5].coord.x = atof(fields[26].c_str());
-    potRobList1.robList[5].coord.y = atof(fields[27].c_str());
-    potRobList1.robList[5].lost = atoi(fields[28].c_str());
-    potRobList1.robList[5].active = atoi(fields[29].c_str());
+     int i=0;
+    potRobList1.robList[0].id = atoi(fields[i++].c_str());
+    potRobList1.robList[0].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[0].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[0].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[0].active = atoi(fields[i++].c_str());
+    potRobList1.robList[0].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[0].center.y = atof(fields[i++].c_str());
+    potRobList1.robList[1].id = atoi(fields[i++].c_str());
+    potRobList1.robList[1].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[1].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[1].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[1].active = atoi(fields[i++].c_str());
+    potRobList1.robList[1].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[1].center.y = atof(fields[i++].c_str());
+    potRobList1.robList[2].id = atoi(fields[i++].c_str());
+    potRobList1.robList[2].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[2].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[2].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[2].active = atoi(fields[i++].c_str());
+    potRobList1.robList[2].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[2].center.y = atof(fields[i++].c_str());
+    potRobList1.robList[3].id = atoi(fields[i++].c_str());
+    potRobList1.robList[3].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[3].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[3].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[3].active = atoi(fields[i++].c_str());
+    potRobList1.robList[3].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[3].center.y = atof(fields[i++].c_str());
+    potRobList1.robList[4].id = atoi(fields[i++].c_str());
+    potRobList1.robList[4].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[4].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[4].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[4].active = atoi(fields[i++].c_str());
+    potRobList1.robList[4].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[4].center.y = atof(fields[i++].c_str());
+
+    potRobList1.robList[5].id = atoi(fields[i++].c_str());
+    potRobList1.robList[5].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[5].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[5].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[5].active = atoi(fields[i++].c_str());
+    potRobList1.robList[5].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[5].center.y = atof(fields[i++].c_str());
 
     timestamp1 = msg->stamp;
 
@@ -145,43 +170,56 @@ void roblistCallback2(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
     vector <string> fields;
 
     split_regex(fields, msg->data.c_str(), regex(","));
+    int i=0;
+    potRobList2.robList[0].id = atoi(fields[i++].c_str());
+    potRobList2.robList[0].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[0].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[0].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[0].active = atoi(fields[i++].c_str());
+    potRobList2.robList[0].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[0].center.y = atof(fields[i++].c_str());
+    potRobList2.robList[1].id = atoi(fields[i++].c_str());
+    potRobList2.robList[1].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[1].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[1].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[1].active = atoi(fields[i++].c_str());
+    potRobList2.robList[1].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[1].center.y = atof(fields[i++].c_str());
+    potRobList2.robList[2].id = atoi(fields[i++].c_str());
+    potRobList2.robList[2].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[2].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[2].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[2].active = atoi(fields[i++].c_str());
+    potRobList2.robList[2].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[2].center.y = atof(fields[i++].c_str());
+    potRobList2.robList[3].id = atoi(fields[i++].c_str());
+    potRobList2.robList[3].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[3].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[3].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[3].active = atoi(fields[i++].c_str());
+    potRobList2.robList[3].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[3].center.y = atof(fields[i++].c_str());
+    potRobList2.robList[4].id = atoi(fields[i++].c_str());
+    potRobList2.robList[4].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[4].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[4].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[4].active = atoi(fields[i++].c_str());
+    potRobList2.robList[4].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[4].center.y = atof(fields[i++].c_str());
 
-    potRobList2.robList[0].id = atoi(fields[0].c_str());
-    potRobList2.robList[0].coord.x = atof(fields[1].c_str());
-    potRobList2.robList[0].coord.y = atof(fields[2].c_str());
-    potRobList2.robList[0].lost = atoi(fields[3].c_str());
-    potRobList2.robList[0].active = atoi(fields[4].c_str());
-    potRobList2.robList[1].id = atoi(fields[5].c_str());
-    potRobList2.robList[1].coord.x = atof(fields[6].c_str());
-    potRobList2.robList[1].coord.y = atof(fields[7].c_str());
-    potRobList2.robList[1].lost = atoi(fields[8].c_str());
-    potRobList2.robList[1].active = atoi(fields[9].c_str());
-    potRobList2.robList[2].id = atoi(fields[10].c_str());
-    potRobList2.robList[2].coord.x = atof(fields[11].c_str());
-    potRobList2.robList[2].coord.y = atof(fields[12].c_str());
-    potRobList2.robList[2].lost = atoi(fields[13].c_str());
-    potRobList2.robList[2].active = atoi(fields[14].c_str());
-    potRobList2.robList[3].id = atoi(fields[15].c_str());
-    potRobList2.robList[3].coord.x = atof(fields[16].c_str());
-    potRobList2.robList[3].coord.y = atof(fields[17].c_str());
-    potRobList2.robList[3].lost = atoi(fields[18].c_str());
-    potRobList2.robList[3].active = atoi(fields[19].c_str());
-    potRobList2.robList[4].id = atoi(fields[20].c_str());
-    potRobList2.robList[4].coord.x = atof(fields[21].c_str());
-    potRobList2.robList[4].coord.y = atof(fields[22].c_str());
-    potRobList2.robList[4].lost = atoi(fields[23].c_str());
-    potRobList2.robList[4].active = atoi(fields[24].c_str());
-    potRobList2.robList[5].id = atoi(fields[25].c_str());
-    potRobList2.robList[5].coord.x = atof(fields[26].c_str());
-    potRobList2.robList[5].coord.y = atof(fields[27].c_str());
-    potRobList2.robList[5].lost = atoi(fields[28].c_str());
-    potRobList2.robList[5].active = atoi(fields[29].c_str());
+    potRobList2.robList[5].id = atoi(fields[i++].c_str());
+    potRobList2.robList[5].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[5].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[5].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[5].active = atoi(fields[i++].c_str());
+    potRobList2.robList[5].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[5].center.y = atof(fields[i++].c_str());
 
     timestamp2 = msg->stamp;
-
-    //      for (int i=0; i<robMax;i++)
-    //    printf("Robot cal2 %d : (%f, %f, %f)\n", i, avRobList2.robList[i].coord.x, avRobList2.robList[i].coord.y, avRobList2.robList[i].lost);
-    //   
+//
+//          for (int i=0; i<robMax;i++)
+//        printf("Robot cal2 %d : (%f, %f, %f)\n", i, potRobList2.robList[i].coord.x, potRobList2.robList[i].coord.y, potRobList2.robList[i].lost);
+//       
 }
 
 //void makelistRobot(avRobList) {
@@ -293,7 +331,7 @@ void computeDistMatrix(RobotList *avRobList, RobotList potRobList) {
 void updateRobotList(RobotList *avRobList, RobotList potRobList) {
     int i, j;
     // Allowed movement
-    float distTh = 200; //mm
+    float distTh = 400; //mm
   
     // If any potential robot  has been detected... 
     if (potRobList.robNum > 0) {
@@ -364,7 +402,7 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
                         else
                             minDist_av_pot = INFINITY;
 
-                        printf("ROB %d SCEGLIE POT %d....", i, idPot);
+                        //    printf("ROB %d SCEGLIE POT %d....", i, idPot);
 
                         //se la mindistap è accettabile
                         if (minDist_av_pot < distTh + (distTh * avRobList->robList[i].lost) / 4) {
@@ -470,7 +508,8 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
             //  if (potRobList1.robList[i].coord.y <= 1200) {
             //   printf("in margin: %d\n",i); 
             potRobList.robList[n].id = potRobList1.robList[i].id;
-
+            potRobList.robList[n].center.x = potRobList1.robList[i].center.x;
+            potRobList.robList[n].center.y = potRobList1.robList[i].center.y;
             potRobList.robList[n].coord.x = potRobList1.robList[i].coord.x;
             potRobList.robList[n].coord.y = potRobList1.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList1.robList[i].lost;
@@ -492,6 +531,9 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
             // if (potRobList2.robList[i].coord.y > 1200) {
 
             potRobList.robList[n].id = potRobList2.robList[i].id;
+            potRobList.robList[n].center.x = potRobList2.robList[i].center.x;
+            potRobList.robList[n].center.y = potRobList2.robList[i].center.y;
+           // printf("prova: %f",potRobList.robList[n].center.y );
             potRobList.robList[n].coord.x = potRobList2.robList[i].coord.x;
             potRobList.robList[n].coord.y = potRobList2.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList2.robList[i].lost;
@@ -518,8 +560,202 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
     //    printf("\n");
 
 
+}
+
+//this function is called everytime a new image is published
+
+void c1imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
 
 
+
+
+    //Convert from the ROS image message to a CvImage suitable for
+    //working with OpenCV for processing
+
+    cv_bridge::CvImagePtr cv_ptr;
+    try {
+        //Always copy, returning a mutable CvImage
+        //OpenCV expects color images to use BGR channel order.
+        cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+    } catch (cv_bridge::Exception& e) {
+        //if there is an error during conversion, display it
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+
+    IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
+
+
+
+    //print robot id in immagine
+
+    //          CvPoint point  = cvPointFrom32f(cordin);
+
+    cvNamedWindow("id2", CV_WINDOW_NORMAL);
+    cvResizeWindow("id2", 320, 280);
+
+
+    CvPoint point;
+
+    point.x = avRobList.robList[0].center.x;
+    point.y = avRobList.robList[0].center.y;
+
+    printf("cord: %d, %d\n", point.x, point.y);
+
+    char str[200];
+    sprintf(str, "ciao");
+    cv::Mat image11(frame);
+    putText(image11, str, point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+    cvShowImage("id2", frame);
+
+    /*decommentare se merge immagini decommentato*/
+    // frame_c1 = cvCloneImage(frame); 
+    //  printf("ok_C1\n");
+    cvReleaseImage(&frame);
+}
+
+//this function is called everytime a new image is published
+
+void c2imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
+
+
+
+
+    //Convert from the ROS image message to a CvImage suitable for
+    //working with OpenCV for processing
+
+    cv_bridge::CvImagePtr cv_ptr;
+    try {
+        //Always copy, returning a mutable CvImage
+        //OpenCV expects color images to use BGR channel order.
+        cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+    } catch (cv_bridge::Exception& e) {
+        //if there is an error during conversion, display it
+        ROS_ERROR("cv_bridge exception: %s", e.what());
+        return;
+    }
+
+    IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
+
+
+
+    //print robot id in immagine
+
+    //          CvPoint point  = cvPointFrom32f(cordin);
+
+    //  cvNamedWindow("id", CV_WINDOW_NORMAL);
+    // cvResizeWindow("id", 320, 280);
+
+
+    CvPoint point;
+
+    //  CvPoint2D32f cordin;
+    //        cordin.x= potRobList.robList[0].center.x;
+    //        cordin.y= potRobList.robList[0].center.y;
+
+    point.x = 100;
+    point.y = 100;
+
+
+    // char str[200];
+    // sprintf(str, "1");
+    //  cv::Mat image11(frame);
+    // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
+    //  cvShowImage("id", frame);
+
+    frame_c2 = cvCloneImage(frame);
+    printf("ok_c2\n");
+    cvReleaseImage(&frame);
+
+
+}
+
+void gui_builder() {
+
+    //    cvNamedWindow("id", CV_WINDOW_AUTOSIZE);
+    //        // cvResizeWindow("id", 320, 280);
+    //    cv::Mat *working_frame;
+    //     cv::Mat *merged_frame = Mat(Size(640, 480), CV_8UC3);
+    //      cv::Mat image1(frame_c1);
+    //  //  resize(image1, working_frame, Size(), 0.5, 0.5); //320 256
+    //     
+    //  cv::Mat roi = Mat(merged_frame, Rect(0, 0, 320, 256));
+    //    working_frame.copyTo(roi);
+    //    
+    ////roi = Mat(merged_frame, Rect(320, 0, 320, 240));
+    ////detected_frame.copyTo(roi);
+    ////roi = Mat(merged_frame, Rect(0, 240, 320, 240));
+    ////threshold_color_frame.copyTo(roi);
+    ////roi = Mat(merged_frame, Rect(320, 240, 320, 240));
+    ////threshold_grayscale_frame.copyTo(roi);
+    //         
+    //         
+    //         
+    //        cv::imshow("id", merged_frame);
+    //   
+
+}
+
+void mergeImage() {
+
+    /* le immagini in ingresso non sono sufficientemente simili quindi non 
+     * riesce ad unirle
+     */
+
+    bool try_use_gpu = true;
+
+    vector<Mat> imgs;
+
+    if (frame_c1 != 0 && frame_c2 != 0) {
+        //
+        printf("immagini acquisite\n");
+        Stitcher stitcher = Stitcher::createDefault(try_use_gpu);
+        //
+        //
+
+        //    to rotate image
+        Mat source(frame_c2);
+
+
+        Point2f src_center(source.cols / 2.0, source.rows / 2.0);
+        Mat rot_mat = getRotationMatrix2D(src_center, 90, 1.0);
+        Mat dst;
+        warpAffine(source, dst, rot_mat, source.size());
+
+        //Open the window
+        cv::namedWindow("rotated");
+        //IplImage* im_rotated = &dst.operator IplImage(); 
+        cv::imshow("rotated", dst);
+
+
+        cv::Mat image_c1(frame_c1);
+        cv::Mat image_c2(frame_c2);
+        //  imgs[0] = image_c1;
+        // imgs[1] = image_c2;
+        imgs.assign(1, image_c1);
+        imgs.assign(1, image_c2);
+
+        //
+        Mat pano;
+        //
+        Stitcher::Status status = stitcher.stitch(imgs, pano);
+        //
+        if (status != Stitcher::OK) {
+            cout << "Error stitching - Code: " << int(status) << endl;
+            //       cout << "Error in frame querying" << endl;
+            //            //   exit(0);
+            //      //   return -1;
+        } else {
+            cvNamedWindow("fus", CV_WINDOW_NORMAL);
+            cvResizeWindow("fus", 320, 240);
+            // cvShowImage("fus",frame_c1);
+            // cv::imshow("id", pano);
+            cv::imshow("fus", pano);
+
+        }
+        //        
+    }
+    //
 
 
 }
@@ -543,12 +779,12 @@ RobotList deleteDuplicate() {
                     diff_x = abs(potRobList.robList[i].coord.x - potRobList.robList[j].coord.x);
                     diff_y = abs(potRobList.robList[i].coord.y - potRobList.robList[j].coord.y);
 
-                    printf("diff [%d][%d], x: %2.2f y=%2.2f  ", i, j, diff_x, diff_y);
+                      printf("diff [%d][%d], x: %2.2f y=%2.2f  ", i, j, diff_x, diff_y);
 
                     if ((diff_x <= 200) && (diff_y <= 200)) {
                         potRobList.robList[j].hasDuplicate = 1;
-                        printf(".....");
-                        printf("duplicato = %d\n ", j);
+                          printf(".....");
+                           printf("duplicato = %d\n ", j);
 
 
                         //                     printf("potRobList I.x [%f] \n", potRobList.robList[i].coord.x);
@@ -557,7 +793,7 @@ RobotList deleteDuplicate() {
 
                     } else {
                         potRobList.robList[j].hasDuplicate = 0;
-                        printf("NO %d\n", j);
+                            printf("NO %d\n", j);
                     }
 
                 }
@@ -567,14 +803,14 @@ RobotList deleteDuplicate() {
     }
 
 
-//    for (int i = 0; i < robMax; i++) {
-//
-//        printf("id:[%d]  duplicato[%d]\n ", i, potRobList.robList[i].hasDuplicate);
-//
-//    }
+    //    for (int i = 0; i < robMax; i++) {
+    //
+    //        printf("id:[%d]  duplicato[%d]\n ", i, potRobList.robList[i].hasDuplicate);
+    //
+    //    }
 
 
-    printf("elimino eventuali rob doppi \n");
+    // printf("elimino eventuali rob doppi \n");
     int n = 0;
     fusion.robNum = 0;
 
@@ -582,10 +818,12 @@ RobotList deleteDuplicate() {
         //   printf("potRobList.robList[%d].active= %d \n ", i, potRobList.robList[i].active);
         //   printf("potRobList.robList[%d].hasDuplicate= %d \n ", i, potRobList.robList[i].hasDuplicate);
         if (potRobList.robList[i].hasDuplicate == 0 && potRobList.robList[i].active == 1) { //
-            printf("-->copio potRobList[%d] in fusion.robList[%d]\n ", i, n);
+            //  printf("-->copio potRobList[%d] in fusion.robList[%d]\n ", i, n);
             fusion.robList[n].id = potRobList.robList[i].id;
             fusion.robList[n].coord.x = potRobList.robList[i].coord.x;
             fusion.robList[n].coord.y = potRobList.robList[i].coord.y;
+            fusion.robList[n].center.y = potRobList.robList[i].center.y;
+            fusion.robList[n].center.x = potRobList.robList[i].center.x;
             fusion.robList[n].lost = potRobList.robList[i].lost;
             fusion.robList[n].active = potRobList.robList[i].active;
             n++;
@@ -597,7 +835,7 @@ RobotList deleteDuplicate() {
             //            }
         }
     }
-    printf("fusion.robNum %d\n", fusion.robNum);
+    //  printf("fusion.robNum %d\n", fusion.robNum);
     //  
 
 
@@ -608,20 +846,22 @@ RobotList deleteDuplicate() {
         fusion.robList[n].id = 0;
         fusion.robList[n].coord.x = 0;
         fusion.robList[n].coord.y = 0;
+        fusion.robList[n].center.x = 0;
+        fusion.robList[n].center.y = 0;
         fusion.robList[n].lost = 0;
         fusion.robList[n].active = 0;
         n++;
     }
 
 
-    for (int i = 0; i < robMax; i++) {
-        printf("POT_Robot %d : (%f, %f)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
-    }
-
-    for (int i = 0; i < robMax; i++) {
-       
-        printf("FUS_Robot %d : (%f, %f)\n", fusion.robList[i].id, fusion.robList[i].coord.x, fusion.robList[i].coord.y);
-    }
+        for (int i = 0; i < robMax; i++) {
+            printf("POT_Robot %d : (%f, %f)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
+        }
+    
+        for (int i = 0; i < robMax; i++) {
+    
+            printf("FUS_Robot %d : (%f, %f)\n", fusion.robList[i].id, fusion.robList[i].coord.x, fusion.robList[i].coord.y);
+        }
 
     return fusion;
 }
@@ -636,11 +876,21 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
 
+    //Create an ImageTransport instance, initializing it with our NodeHandle.
+    image_transport::ImageTransport it(nh);
+
 
 
     // %Tag(SUBSCRIBER)%
     ros::Subscriber sub1 = nh.subscribe("robList_labrob14_c1", 100, roblistCallback1);
     ros::Subscriber sub2 = nh.subscribe("robList_labrob14_c2", 100, roblistCallback2);
+
+    //ros::Subscriber sub = nh.subscribe(imagetopic, 1, imageCallback);
+    // image_transport::Subscriber sub = it.subscribe("/camera2_labrob14/RGB", 1, c2imageCallback, image_transport::TransportHints::TransportHints("compressed"));
+    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 100, c1imageCallback);
+    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 100, c2imageCallback);
+
+
     // %EndTag(SUBSCRIBER)%
 
     // ros::Publisher list_pub = nh.advertise<tutorialROSOpenCV::Stringts > ("robList", 100);
@@ -649,9 +899,10 @@ int main(int argc, char **argv) {
 
 
 
+
     avRobList.robNum = 0;
     avRobList.init = 1;
-    ros::Rate r(20); // 10 hz
+    ros::Rate r(20); // 20 hz
     int c = 0;
     while (ros::ok()) {
         printf("*********c:[%d]\n", c);
@@ -687,10 +938,26 @@ int main(int argc, char **argv) {
 
 
         for (int i = 0; i < robMax; i++) {
-            printf("AV_ROB %d : (%f, %f, %d)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
+            printf("AV_ROB %d : (%f, %f,%f,%f, %d)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y,avRobList.robList[i].center.x,avRobList.robList[i].center.y, avRobList.robList[i].lost);
         }
 
 
+        // gui_builder();
+        //mergeImage(); //vedere commento nel metodo
+        //print robot id in immagine
+        //        
+        //          CvPoint point  = cvPointFrom32f(cordin); 
+        //           //printf("pix %.2f,%.2f\n", potRobList.robList[0].center.x,potRobList.robList[0].center.y);
+        //           // printf("pix %.2f,%.2f\n", potRobList.robList[1].center.x,potRobList.robList[1].center.y);
+        //    cvCircle(frame1,point,10, cvScalar(0, 0, 255), 10, 8, 0);
+        ////    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
+        //
+        cv::waitKey(3);
+
+        if (frame_c1 != 0)
+            cvReleaseImage(&frame_c1);
+        if (frame_c2 != 0)
+            cvReleaseImage(&frame_c2);
 
         r.sleep();
 
