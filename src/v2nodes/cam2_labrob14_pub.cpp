@@ -100,61 +100,62 @@ void makelistRobot() {
     msg.stamp = framets.clock; //associo alla lista robot il timestamp del frame relativo
 
     // %Tag(ROSCONSOLE)%
-    ROS_INFO("%s", msg.data.c_str());
+   // ROS_INFO("%s", msg.data.c_str());
     // %EndTag(ROSCONSOLE)%
 
-    for (int i = 0; i < robMax; i++)
-        printf("Robot %d : (%f, %f, l: %d,a: %d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].lost, potRobList.robList[i].active);
-
-
+    for (int i = 0; i < robMax; i++){
+        printf("Robot %d : (x:%2.2f, y:%2.2f,a: %d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].active);
+        
+    }
+printf("--------------------------------------------\n");
 }
 
 // %Tag(CALLBACK)%
 
-void roblistCallback(const std_msgs::String::ConstPtr& msg) {
-
-
-    vector <string> fields;
-
-    split_regex(fields, msg->data.c_str(), regex(","));
-
-    avRobList.robList[0].id = atoi(fields[0].c_str());
-    avRobList.robList[0].coord.x = atof(fields[1].c_str());
-    avRobList.robList[0].coord.y = atof(fields[2].c_str());
-    avRobList.robList[0].lost = atoi(fields[3].c_str());
-    avRobList.robList[0].active = atoi(fields[4].c_str());
-    avRobList.robList[1].id = atoi(fields[5].c_str());
-    avRobList.robList[1].coord.x = atof(fields[6].c_str());
-    avRobList.robList[1].coord.y = atof(fields[7].c_str());
-    avRobList.robList[1].lost = atoi(fields[8].c_str());
-    avRobList.robList[1].active = atoi(fields[9].c_str());
-    avRobList.robList[2].id = atoi(fields[10].c_str());
-    avRobList.robList[2].coord.x = atof(fields[11].c_str());
-    avRobList.robList[2].coord.y = atof(fields[12].c_str());
-    avRobList.robList[2].lost = atoi(fields[13].c_str());
-    avRobList.robList[2].active = atoi(fields[14].c_str());
-    avRobList.robList[3].id = atoi(fields[15].c_str());
-    avRobList.robList[3].coord.x = atof(fields[16].c_str());
-    avRobList.robList[3].coord.y = atof(fields[17].c_str());
-    avRobList.robList[3].lost = atoi(fields[18].c_str());
-    avRobList.robList[3].active = atoi(fields[19].c_str());
-    avRobList.robList[4].id = atoi(fields[20].c_str());
-    avRobList.robList[4].coord.x = atof(fields[21].c_str());
-    avRobList.robList[4].coord.y = atof(fields[22].c_str());
-    avRobList.robList[4].lost = atoi(fields[23].c_str());
-    avRobList.robList[4].active = atoi(fields[24].c_str());
-    avRobList.robList[5].id = atoi(fields[25].c_str());
-    avRobList.robList[5].coord.x = atof(fields[26].c_str());
-    avRobList.robList[5].coord.y = atof(fields[27].c_str());
-    avRobList.robList[5].lost = atoi(fields[28].c_str());
-    avRobList.robList[5].active = atoi(fields[29].c_str());
-
-
-    //      for (int i=0; i<robMax;i++)
-    //    printf("Robot %d : (%f, %f, %f)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
-    //   
-}
-// %EndTag(CALLBACK)%
+//void roblistCallback(const std_msgs::String::ConstPtr& msg) {
+//
+//
+//    vector <string> fields;
+//
+//    split_regex(fields, msg->data.c_str(), regex(","));
+//
+//    avRobList.robList[0].id = atoi(fields[0].c_str());
+//    avRobList.robList[0].coord.x = atof(fields[1].c_str());
+//    avRobList.robList[0].coord.y = atof(fields[2].c_str());
+//    avRobList.robList[0].lost = atoi(fields[3].c_str());
+//    avRobList.robList[0].active = atoi(fields[4].c_str());
+//    avRobList.robList[1].id = atoi(fields[5].c_str());
+//    avRobList.robList[1].coord.x = atof(fields[6].c_str());
+//    avRobList.robList[1].coord.y = atof(fields[7].c_str());
+//    avRobList.robList[1].lost = atoi(fields[8].c_str());
+//    avRobList.robList[1].active = atoi(fields[9].c_str());
+//    avRobList.robList[2].id = atoi(fields[10].c_str());
+//    avRobList.robList[2].coord.x = atof(fields[11].c_str());
+//    avRobList.robList[2].coord.y = atof(fields[12].c_str());
+//    avRobList.robList[2].lost = atoi(fields[13].c_str());
+//    avRobList.robList[2].active = atoi(fields[14].c_str());
+//    avRobList.robList[3].id = atoi(fields[15].c_str());
+//    avRobList.robList[3].coord.x = atof(fields[16].c_str());
+//    avRobList.robList[3].coord.y = atof(fields[17].c_str());
+//    avRobList.robList[3].lost = atoi(fields[18].c_str());
+//    avRobList.robList[3].active = atoi(fields[19].c_str());
+//    avRobList.robList[4].id = atoi(fields[20].c_str());
+//    avRobList.robList[4].coord.x = atof(fields[21].c_str());
+//    avRobList.robList[4].coord.y = atof(fields[22].c_str());
+//    avRobList.robList[4].lost = atoi(fields[23].c_str());
+//    avRobList.robList[4].active = atoi(fields[24].c_str());
+//    avRobList.robList[5].id = atoi(fields[25].c_str());
+//    avRobList.robList[5].coord.x = atof(fields[26].c_str());
+//    avRobList.robList[5].coord.y = atof(fields[27].c_str());
+//    avRobList.robList[5].lost = atoi(fields[28].c_str());
+//    avRobList.robList[5].active = atoi(fields[29].c_str());
+//
+//
+//    //      for (int i=0; i<robMax;i++)
+//    //    printf("Robot %d : (%f, %f, %f)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
+//    //   
+//}
+//// %EndTag(CALLBACK)%
 
 Robot createRobot(CvPoint2D32f h, CvPoint2D32f t) {
 
@@ -590,8 +591,8 @@ int main(int argc, char **argv) {
 
     //advertise the video on the path below
 
-    pub_f = it_f.advertise("camera2_labrob14/blobs", 100);
-    pub_or = it_or.advertise("camera2_labrob14/RGB", 100);
+    pub_f = it_f.advertise("camera2_labrob14/blobs", 10);
+    pub_or = it_or.advertise("camera2_labrob14/RGB", 10);
 
     avRobList.robNum = 0;
     avRobList.init = 1;
@@ -612,7 +613,7 @@ int main(int argc, char **argv) {
     InitPixelMap(name);
 
     //start capturing from webcam, 0 is for the default webcam /dev/video0
-    capture = cvCaptureFromCAM(0);
+    capture = cvCaptureFromCAM(1);
     if (!capture) {
         printf("Capture failure\n");
         return -1;
@@ -622,17 +623,17 @@ int main(int argc, char **argv) {
     cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, 480);
 
     //creating an output video and setting it to be handly resizable
-    cvNamedWindow("Output", CV_WINDOW_NORMAL);
-    cvResizeWindow("Output", 320, 280);
-    cvNamedWindow("input", CV_WINDOW_NORMAL);
-    cvResizeWindow("input", 320, 280);
+   cvNamedWindow("Output cam2", CV_WINDOW_NORMAL);
+    cvResizeWindow("Output cam2", 320, 280);
+   // cvNamedWindow("input", CV_WINDOW_NORMAL);
+    //cvResizeWindow("input", 320, 280);
 
 
     frame = cvQueryFrame(capture);
     frame = cvQueryFrame(capture);
     frame = cvQueryFrame(capture);
 
-    ros::Rate r(20);
+    ros::Rate r(10);
 
 
     while (1) {
@@ -690,13 +691,13 @@ int main(int argc, char **argv) {
         CvPoint point = cvPointFrom32f(cordin);
         //printf("pix %.2f,%.2f\n", potRobList.robList[0].center.x,potRobList.robList[0].center.y);
         // printf("pix %.2f,%.2f\n", potRobList.robList[1].center.x,potRobList.robList[1].center.y);
-        cvCircle(frame1, point, 10, cvScalar(0, 0, 255), 10, 8, 0);
+     //   cvCircle(frame1, point, 10, cvScalar(0, 0, 255), 10, 8, 0);
         //    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
 
 
         cvSmooth(imgFinal, imgFinal, CV_GAUSSIAN, 3, 3); //smooth the binary image using Gaussian kernel
 
-        cvShowImage("Output", imgFinal);
+        cvShowImage("Output cam2", imgFinal);
 
 
         // cv::namedWindow("foo");
@@ -708,7 +709,7 @@ int main(int argc, char **argv) {
         // Display the image m in this window
         //cv::imshow("rotated", dst);
 
-        cvShowImage("input", frame1);
+       // cvShowImage("input", frame1);
 
         //cv::Mat image(imgHSV); 
 

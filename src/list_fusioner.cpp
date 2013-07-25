@@ -78,6 +78,8 @@ RobotList avRobList;
 RobotList potRobList; //merge
 RobotList potRobList1;
 RobotList potRobList2;
+int robot_is_in_cam1[robMax];
+int robot_is_in_cam2[robMax];
 //RobotList avRobList3;
 ros::Time timestamp1;
 ros::Time timestamp2;
@@ -98,7 +100,8 @@ string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 IplImage* frame_c1 = 0;
 IplImage* frame_c2 = 0;
 
-
+int exec_c1=0;
+int exec_c2=0;
 
 // %Tag(CALLBACK)%
 
@@ -263,7 +266,11 @@ void associateRob2Measure(int idAv, int idPot, RobotList *avRobList, RobotList *
     avRobList->robNum++;
     potRobList->robList[idPot].active = 0; //disattivo potRob
     
- //    printf("idAv: %f idPot: %f \n", idAv, idPot);
+    
+    //aggiorno anche l'id dei robot potenziali
+    //potRobList->robList[idPot].id = idAv;
+    
+    // printf("antes idAv: %d idPot: %d \n", idAv, idPot);
     updateDistMatrix(idAv, idPot);
    
 
@@ -394,7 +401,7 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
 
                         // Compute the distance between the i-th robot id and the new locations
                         idPot = findNearestMeasure(i);
-                        // printf("+++++++++++++++idPot i: %d +++++++++++++\n",idPot);
+                        //  printf("+++++++++++++++idPot i: %d +++++++++++++\n",idPot);
                         // The only case it would get -1 is if all distances are infinity
                         // When can this happen?
                         if (idPot>-1)
@@ -420,8 +427,8 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
                             //printf("POT %d SCEGLIE ROB %d dist %f\n",i,idPot,minDist_pot_av);
                             // If the match is accomplished then associate the i-th robot to the location
                             if (idAv == i) { //se corrispondono
-                                //non fa la print!  
-                                //  printf("assRob2mes: (idAv:%d,idPot: %d)\n", idAv, idPot);
+
+                                //      printf("assRob2mes: (idAv:%d,idPot: %d)\n", idAv, idPot);
 
                                 associateRob2Measure(idAv, idPot, avRobList, &potRobList);
 
@@ -445,7 +452,7 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
                         }
                     }
                 }
-                printf("\n");
+                // printf("\n");
                 //               printf("pr %d DEACT %d\n", associated, deactivated);
             }
 
@@ -500,7 +507,16 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
     //
     //    }
     //    printf("\n");
-    int n = 0;
+    int n = 0; 
+    
+   // printf("azzero presenza robot in cam \n");
+    
+    for (int i = 0; i < robMax; i++) {
+    robot_is_in_cam1[i] = 0;
+    robot_is_in_cam2[i] = 0;
+   
+        }
+    
     for (int i = 0; i < robMax; i++) {
         // printf("for %d \n",i); 
         if ((potRobList1.robList[i].active) == 1) {
@@ -515,12 +531,13 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
             potRobList.robList[n].lost = potRobList1.robList[i].lost;
             potRobList.robList[n].active = potRobList1.robList[i].active;
             potRobList.robList[n].hasDuplicate = 0;
+            robot_is_in_cam1[i] = 1;
             potRobList.robNum++;
 
             n++;
 
             //  }
-        }
+        } 
 
     }
 
@@ -533,16 +550,18 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
             potRobList.robList[n].id = potRobList2.robList[i].id;
             potRobList.robList[n].center.x = potRobList2.robList[i].center.x;
             potRobList.robList[n].center.y = potRobList2.robList[i].center.y;
-           // printf("prova: %f",potRobList.robList[n].center.y );
+            // printf("prova: %f",potRobList.robList[n].center.y );
             potRobList.robList[n].coord.x = potRobList2.robList[i].coord.x;
             potRobList.robList[n].coord.y = potRobList2.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList2.robList[i].lost;
             potRobList.robList[n].active = potRobList2.robList[i].active;
             potRobList.robList[n].hasDuplicate = 0;
+            robot_is_in_cam2[i] = 1;
             potRobList.robNum++;
+
             n++;
             //   }
-        }
+        } 
     }
     //    printf("n_out: %d-",n);
     //    
@@ -566,108 +585,113 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
 
 void c1imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
 
+    if (exec_c1 == 0) {
+
+
+        //Convert from the ROS image message to a CvImage suitable for
+        //working with OpenCV for processing
+
+        cv_bridge::CvImagePtr cv_ptr;
+        try {
+            //Always copy, returning a mutable CvImage
+            //OpenCV expects color images to use BGR channel order.
+            cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+        } catch (cv_bridge::Exception& e) {
+            //if there is an error during conversion, display it
+            ROS_ERROR("cv_bridge exception: %s", e.what());
+            return;
+        }
+
+        IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
 
 
 
-    //Convert from the ROS image message to a CvImage suitable for
-    //working with OpenCV for processing
+        //print robot id in immagine
 
-    cv_bridge::CvImagePtr cv_ptr;
-    try {
-        //Always copy, returning a mutable CvImage
-        //OpenCV expects color images to use BGR channel order.
-        cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
-    } catch (cv_bridge::Exception& e) {
-        //if there is an error during conversion, display it
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
+        //          CvPoint point  = cvPointFrom32f(cordin);
+
+        // cvNamedWindow("id2", CV_WINDOW_NORMAL);
+        //cvResizeWindow("id2", 320, 280);
+
+
+        //    CvPoint point;
+        //
+        //    point.x = avRobList.robList[0].center.x;
+        //    point.y = avRobList.robList[0].center.y;
+        //
+        // //   printf("cord: %d, %d\n", point.x, point.y);
+        //
+        //    //char str[200];
+        //  //  sprintf(str, "ciao");
+        //  //  cv::Mat image11(frame);
+        //  //  putText(image11, str, point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+        // //   cvShowImage("id2", frame);
+
+        /*decommentare se merge immagini decommentato*/
+        frame_c1 = cvCloneImage(frame);
+        //  printf("ok_C1\n");
+        //   printf("callback1\n");
+        cvReleaseImage(&frame);
     }
-
-    IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
-
-
-
-    //print robot id in immagine
-
-    //          CvPoint point  = cvPointFrom32f(cordin);
-
-    cvNamedWindow("id2", CV_WINDOW_NORMAL);
-    cvResizeWindow("id2", 320, 280);
-
-
-    CvPoint point;
-
-    point.x = avRobList.robList[0].center.x;
-    point.y = avRobList.robList[0].center.y;
-
-    printf("cord: %d, %d\n", point.x, point.y);
-
-    char str[200];
-    sprintf(str, "ciao");
-    cv::Mat image11(frame);
-    putText(image11, str, point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
-    cvShowImage("id2", frame);
-
-    /*decommentare se merge immagini decommentato*/
-    // frame_c1 = cvCloneImage(frame); 
-    //  printf("ok_C1\n");
-    cvReleaseImage(&frame);
 }
+
 
 //this function is called everytime a new image is published
 
 void c2imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
 
 
+    if (exec_c2 == 0) {
+
+        //Convert from the ROS image message to a CvImage suitable for
+        //working with OpenCV for processing
+
+        cv_bridge::CvImagePtr cv_ptr;
+        try {
+            //Always copy, returning a mutable CvImage
+            //OpenCV expects color images to use BGR channel order.
+            cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+        } catch (cv_bridge::Exception& e) {
+            //if there is an error during conversion, display it
+            ROS_ERROR("cv_bridge exception: %s", e.what());
+            return;
+        }
+
+        IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
 
 
-    //Convert from the ROS image message to a CvImage suitable for
-    //working with OpenCV for processing
 
-    cv_bridge::CvImagePtr cv_ptr;
-    try {
-        //Always copy, returning a mutable CvImage
-        //OpenCV expects color images to use BGR channel order.
-        cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
-    } catch (cv_bridge::Exception& e) {
-        //if there is an error during conversion, display it
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
+        //print robot id in immagine
+
+        //          CvPoint point  = cvPointFrom32f(cordin);
+
+        //  cvNamedWindow("id", CV_WINDOW_NORMAL);
+        // cvResizeWindow("id", 320, 280);
+
+
+        //    CvPoint point;
+        //
+        //    //  CvPoint2D32f cordin;
+        //    //        cordin.x= potRobList.robList[0].center.x;
+        //    //        cordin.y= potRobList.robList[0].center.y;
+        //
+        //    point.x = 100;
+        //    point.y = 100;
+        //
+
+        // char str[200];
+        // sprintf(str, "1");
+        //  cv::Mat image11(frame);
+        // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
+        //  cvShowImage("id", frame);
+
+        frame_c2 = cvCloneImage(frame);
+        // printf("ok_c2\n");
+        cvReleaseImage(&frame);
+        //   printf("callback2\n");
+        exec_c1 = 1;
+
     }
-
-    IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
-
-
-
-    //print robot id in immagine
-
-    //          CvPoint point  = cvPointFrom32f(cordin);
-
-    //  cvNamedWindow("id", CV_WINDOW_NORMAL);
-    // cvResizeWindow("id", 320, 280);
-
-
-    CvPoint point;
-
-    //  CvPoint2D32f cordin;
-    //        cordin.x= potRobList.robList[0].center.x;
-    //        cordin.y= potRobList.robList[0].center.y;
-
-    point.x = 100;
-    point.y = 100;
-
-
-    // char str[200];
-    // sprintf(str, "1");
-    //  cv::Mat image11(frame);
-    // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
-    //  cvShowImage("id", frame);
-
-    frame_c2 = cvCloneImage(frame);
-    printf("ok_c2\n");
-    cvReleaseImage(&frame);
-
-
 }
 
 void gui_builder() {
@@ -696,69 +720,69 @@ void gui_builder() {
 
 }
 
-void mergeImage() {
-
-    /* le immagini in ingresso non sono sufficientemente simili quindi non 
-     * riesce ad unirle
-     */
-
-    bool try_use_gpu = true;
-
-    vector<Mat> imgs;
-
-    if (frame_c1 != 0 && frame_c2 != 0) {
-        //
-        printf("immagini acquisite\n");
-        Stitcher stitcher = Stitcher::createDefault(try_use_gpu);
-        //
-        //
-
-        //    to rotate image
-        Mat source(frame_c2);
-
-
-        Point2f src_center(source.cols / 2.0, source.rows / 2.0);
-        Mat rot_mat = getRotationMatrix2D(src_center, 90, 1.0);
-        Mat dst;
-        warpAffine(source, dst, rot_mat, source.size());
-
-        //Open the window
-        cv::namedWindow("rotated");
-        //IplImage* im_rotated = &dst.operator IplImage(); 
-        cv::imshow("rotated", dst);
-
-
-        cv::Mat image_c1(frame_c1);
-        cv::Mat image_c2(frame_c2);
-        //  imgs[0] = image_c1;
-        // imgs[1] = image_c2;
-        imgs.assign(1, image_c1);
-        imgs.assign(1, image_c2);
-
-        //
-        Mat pano;
-        //
-        Stitcher::Status status = stitcher.stitch(imgs, pano);
-        //
-        if (status != Stitcher::OK) {
-            cout << "Error stitching - Code: " << int(status) << endl;
-            //       cout << "Error in frame querying" << endl;
-            //            //   exit(0);
-            //      //   return -1;
-        } else {
-            cvNamedWindow("fus", CV_WINDOW_NORMAL);
-            cvResizeWindow("fus", 320, 240);
-            // cvShowImage("fus",frame_c1);
-            // cv::imshow("id", pano);
-            cv::imshow("fus", pano);
-
-        }
-        //        
-    }
-    //
-
-
-}
+//void mergeImage() {
+//
+//    /* le immagini in ingresso non sono sufficientemente simili quindi non 
+//     * riesce ad unirle
+//     */
+//
+//    bool try_use_gpu = true;
+//
+//    vector<Mat> imgs;
+//
+//    if (frame_c1 != 0 && frame_c2 != 0) {
+//        //
+//        printf("immagini acquisite\n");
+//        Stitcher stitcher = Stitcher::createDefault(try_use_gpu);
+//        //
+//        //
+//
+//        //    to rotate image
+//        Mat source(frame_c2);
+//
+//
+//        Point2f src_center(source.cols / 2.0, source.rows / 2.0);
+//        Mat rot_mat = getRotationMatrix2D(src_center, 90, 1.0);
+//        Mat dst;
+//        warpAffine(source, dst, rot_mat, source.size());
+//
+//        //Open the window
+//        cv::namedWindow("rotated");
+//        //IplImage* im_rotated = &dst.operator IplImage(); 
+//        cv::imshow("rotated", dst);
+//
+//
+//        cv::Mat image_c1(frame_c1);
+//        cv::Mat image_c2(frame_c2);
+//        //  imgs[0] = image_c1;
+//        // imgs[1] = image_c2;
+//        imgs.assign(1, image_c1);
+//        imgs.assign(1, image_c2);
+//
+//        //
+//        Mat pano;
+//        //
+//        Stitcher::Status status = stitcher.stitch(imgs, pano);
+//        //
+//        if (status != Stitcher::OK) {
+//            cout << "Error stitching - Code: " << int(status) << endl;
+//            //       cout << "Error in frame querying" << endl;
+//            //            //   exit(0);
+//            //      //   return -1;
+//        } else {
+//            cvNamedWindow("fus", CV_WINDOW_NORMAL);
+//            cvResizeWindow("fus", 320, 240);
+//            // cvShowImage("fus",frame_c1);
+//            // cv::imshow("id", pano);
+//            cv::imshow("fus", pano);
+//
+//        }
+//        //        
+//    }
+//    //
+//
+//
+//}
 
 RobotList deleteDuplicate() {
 
@@ -770,6 +794,8 @@ RobotList deleteDuplicate() {
     float diff_x = 0;
     float diff_y = 0;
     for (int i = 0; i < robMax; i++) {
+
+
         if ((potRobList.robList[i].active) == 1) {
             //   printf("ricerca duplicati robot id: %d\n", i);
             for (int j = i + 1; j < robMax; j++) {
@@ -779,12 +805,12 @@ RobotList deleteDuplicate() {
                     diff_x = abs(potRobList.robList[i].coord.x - potRobList.robList[j].coord.x);
                     diff_y = abs(potRobList.robList[i].coord.y - potRobList.robList[j].coord.y);
 
-                      printf("diff [%d][%d], x: %2.2f y=%2.2f  ", i, j, diff_x, diff_y);
+                    //   printf("diff [%d][%d], x: %2.2f y=%2.2f  ", i, j, diff_x, diff_y);
 
                     if ((diff_x <= 200) && (diff_y <= 200)) {
                         potRobList.robList[j].hasDuplicate = 1;
-                          printf(".....");
-                           printf("duplicato = %d\n ", j);
+                        //   printf(".....");
+                        //   printf("duplicato = %d\n ", j);
 
 
                         //                     printf("potRobList I.x [%f] \n", potRobList.robList[i].coord.x);
@@ -793,13 +819,15 @@ RobotList deleteDuplicate() {
 
                     } else {
                         potRobList.robList[j].hasDuplicate = 0;
-                            printf("NO %d\n", j);
+                        //       printf("NO %d\n", j);
                     }
 
                 }
             }
 
         }
+
+
     }
 
 
@@ -820,12 +848,15 @@ RobotList deleteDuplicate() {
         if (potRobList.robList[i].hasDuplicate == 0 && potRobList.robList[i].active == 1) { //
             //  printf("-->copio potRobList[%d] in fusion.robList[%d]\n ", i, n);
             fusion.robList[n].id = potRobList.robList[i].id;
+
             fusion.robList[n].coord.x = potRobList.robList[i].coord.x;
             fusion.robList[n].coord.y = potRobList.robList[i].coord.y;
             fusion.robList[n].center.y = potRobList.robList[i].center.y;
             fusion.robList[n].center.x = potRobList.robList[i].center.x;
             fusion.robList[n].lost = potRobList.robList[i].lost;
             fusion.robList[n].active = potRobList.robList[i].active;
+
+
             n++;
             fusion.robNum++;
 
@@ -854,16 +885,86 @@ RobotList deleteDuplicate() {
     }
 
 
-        for (int i = 0; i < robMax; i++) {
-            printf("POT_Robot %d : (%f, %f)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
-        }
-    
-        for (int i = 0; i < robMax; i++) {
-    
-            printf("FUS_Robot %d : (%f, %f)\n", fusion.robList[i].id, fusion.robList[i].coord.x, fusion.robList[i].coord.y);
-        }
+
 
     return fusion;
+}
+
+void putIdOnImages() {
+
+
+    /*
+     
+     funziona solo per la prima immagine perchè in avroblist ho solo le coordinate
+     provenienti da una sola telecamera, quindi quando faccio il confronto 
+     tra le coordinate dei potenziali e degli av trovo solo quelli della prima
+     telecamera (perchè quando elimino i duplicati  elimino i dati della seconda camera
+     (se ho le coordinate da entrambe le webcam*/
+
+    CvPoint point;
+
+    cvNamedWindow("id1", CV_WINDOW_NORMAL);
+    cvResizeWindow("id1", 320, 280);
+    cvNamedWindow("id2", CV_WINDOW_NORMAL);
+    cvResizeWindow("id2", 320, 280);
+
+
+    int idtemp;
+    int p = 0;
+
+    float diff_x;
+    float diff_y;
+
+    for (int i = 0; i < robMax; i++) {
+        point.x = 0;
+        point.y = 0;
+
+           if (potRobList.robList[i].active) {
+        point.x = potRobList.robList[i].center.x;
+        point.y = potRobList.robList[i].center.y;
+
+        p = 0;
+
+        while (p < robMax) {
+            //     printf(" potRobList %d -- avRobList %d --", i,p);
+            idtemp = 0;
+            diff_x = abs(potRobList.robList[i].coord.x - avRobList.robList[p].coord.x);
+            diff_y = abs(potRobList.robList[i].coord.y - avRobList.robList[p].coord.y);
+
+            //   printf("diff %f, %f\n",diff_x,diff_y);
+            if ((diff_x <= 200) && (diff_y <= 200)) {
+                idtemp = avRobList.robList[p].id;
+                //  printf("id:%d \n", idtemp);
+                break;
+            } else p++;
+        }
+
+
+
+
+        std::stringstream s;
+        s << idtemp;
+
+        if (robot_is_in_cam1[i] == 1) {
+       //      printf("rob %d in cam 1 point: %d %d \n", idtemp, point.x, point.y);
+            cv::Mat image11(frame_c1);
+            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+
+        } else  {
+          //  printf("rob %d in cam 2 point: %d %d\n", idtemp, point.x, point.y);
+            cv::Mat image11(frame_c2);
+            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+
+        }
+
+
+        }
+
+        //      }
+
+    }
+    cvShowImage("id1", frame_c1);
+    cvShowImage("id2", frame_c2);
 }
 
 int main(int argc, char **argv) {
@@ -887,8 +988,8 @@ int main(int argc, char **argv) {
 
     //ros::Subscriber sub = nh.subscribe(imagetopic, 1, imageCallback);
     // image_transport::Subscriber sub = it.subscribe("/camera2_labrob14/RGB", 1, c2imageCallback, image_transport::TransportHints::TransportHints("compressed"));
-    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 100, c1imageCallback);
-    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 100, c2imageCallback);
+    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 10, c1imageCallback);
+    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 10, c2imageCallback);
 
 
     // %EndTag(SUBSCRIBER)%
@@ -902,11 +1003,12 @@ int main(int argc, char **argv) {
 
     avRobList.robNum = 0;
     avRobList.init = 1;
-    ros::Rate r(20); // 20 hz
-    int c = 0;
+    ros::Rate r(10); // 20 hz
+    // int c = 0;
+    RobotList fusion1;
     while (ros::ok()) {
-        printf("*********c:[%d]\n", c);
-        c++;
+        //   printf("*********c:[%d]\n", c);
+        //c++;
 
         //  ros::Publisher list_pub = nh.advertise<std_msgs::String > ("robList", 100);
 
@@ -914,7 +1016,7 @@ int main(int argc, char **argv) {
         //unisco le liste con stesso timestamp e pubblico la lista risultante
         lists_merging(potRobList1, potRobList2);
         printf("---------------------------\n");
-        RobotList fusion1 = deleteDuplicate();
+        fusion1 = deleteDuplicate();
 
 
 
@@ -934,13 +1036,21 @@ int main(int argc, char **argv) {
 
         updateRobotList(&avRobList, fusion1);
 
-
-
-
         for (int i = 0; i < robMax; i++) {
-            printf("AV_ROB %d : (%f, %f,%f,%f, %d)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y,avRobList.robList[i].center.x,avRobList.robList[i].center.y, avRobList.robList[i].lost);
+            printf("POT_Robot %d : (%2.2f, %2.2f)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
         }
 
+        //        for (int i = 0; i < robMax; i++) {
+        //
+        //            printf("FUS_Robot %d : (%f, %f)\n", fusion1.robList[i].id, fusion1.robList[i].coord.x, fusion1.robList[i].coord.y);
+        //        }
+        //
+        //
+        for (int i = 0; i < robMax; i++) {
+            printf("AV_ROB %d : (%2.2f, %2.2f, %d)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
+        }
+
+        putIdOnImages();
 
         // gui_builder();
         //mergeImage(); //vedere commento nel metodo
@@ -952,12 +1062,19 @@ int main(int argc, char **argv) {
         //    cvCircle(frame1,point,10, cvScalar(0, 0, 255), 10, 8, 0);
         ////    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
         //
-        cv::waitKey(3);
+        cv::waitKey(10);
 
-        if (frame_c1 != 0)
-            cvReleaseImage(&frame_c1);
-        if (frame_c2 != 0)
-            cvReleaseImage(&frame_c2);
+        //  if (frame_c1 != 0){
+        cvReleaseImage(&frame_c1);
+        exec_c1 = 0;
+        //  printf("rilasciato f1\n");
+        //   }
+
+        // if (frame_c2 != 0){
+        cvReleaseImage(&frame_c2);
+        exec_c1 = 0;
+        //  printf("rilasciato f2\n");
+        //  }
 
         r.sleep();
 
