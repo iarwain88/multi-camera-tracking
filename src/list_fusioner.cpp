@@ -102,6 +102,7 @@ IplImage* frame_c2 = 0;
 
 int exec_c1=0;
 int exec_c2=0;
+int node_number =5;  //Numero di telecamere del sistema
 
 // %Tag(CALLBACK)%
 
@@ -113,50 +114,17 @@ void roblistCallback1(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
     split_regex(fields, msg->data.c_str(), regex(","));
 
      int i=0;
-    potRobList1.robList[0].id = atoi(fields[i++].c_str());
-    potRobList1.robList[0].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[0].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[0].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[0].active = atoi(fields[i++].c_str());
-    potRobList1.robList[0].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[0].center.y = atof(fields[i++].c_str());
-    potRobList1.robList[1].id = atoi(fields[i++].c_str());
-    potRobList1.robList[1].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[1].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[1].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[1].active = atoi(fields[i++].c_str());
-    potRobList1.robList[1].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[1].center.y = atof(fields[i++].c_str());
-    potRobList1.robList[2].id = atoi(fields[i++].c_str());
-    potRobList1.robList[2].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[2].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[2].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[2].active = atoi(fields[i++].c_str());
-    potRobList1.robList[2].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[2].center.y = atof(fields[i++].c_str());
-    potRobList1.robList[3].id = atoi(fields[i++].c_str());
-    potRobList1.robList[3].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[3].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[3].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[3].active = atoi(fields[i++].c_str());
-    potRobList1.robList[3].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[3].center.y = atof(fields[i++].c_str());
-    potRobList1.robList[4].id = atoi(fields[i++].c_str());
-    potRobList1.robList[4].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[4].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[4].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[4].active = atoi(fields[i++].c_str());
-    potRobList1.robList[4].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[4].center.y = atof(fields[i++].c_str());
-
-    potRobList1.robList[5].id = atoi(fields[i++].c_str());
-    potRobList1.robList[5].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[5].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[5].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[5].active = atoi(fields[i++].c_str());
-    potRobList1.robList[5].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[5].center.y = atof(fields[i++].c_str());
-
+     
+     for (int j=0;j<node_number;j++){
+    potRobList1.robList[j].id = atoi(fields[i++].c_str());
+    potRobList1.robList[j].coord.x = atof(fields[i++].c_str());
+    potRobList1.robList[j].coord.y = atof(fields[i++].c_str());
+    potRobList1.robList[j].lost = atoi(fields[i++].c_str());
+    potRobList1.robList[j].active = atoi(fields[i++].c_str());
+    potRobList1.robList[j].center.x = atof(fields[i++].c_str());
+    potRobList1.robList[j].center.y = atof(fields[i++].c_str());
+   
+     }
     timestamp1 = msg->stamp;
 
 
@@ -174,50 +142,18 @@ void roblistCallback2(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
 
     split_regex(fields, msg->data.c_str(), regex(","));
     int i=0;
-    potRobList2.robList[0].id = atoi(fields[i++].c_str());
-    potRobList2.robList[0].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[0].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[0].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[0].active = atoi(fields[i++].c_str());
-    potRobList2.robList[0].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[0].center.y = atof(fields[i++].c_str());
-    potRobList2.robList[1].id = atoi(fields[i++].c_str());
-    potRobList2.robList[1].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[1].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[1].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[1].active = atoi(fields[i++].c_str());
-    potRobList2.robList[1].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[1].center.y = atof(fields[i++].c_str());
-    potRobList2.robList[2].id = atoi(fields[i++].c_str());
-    potRobList2.robList[2].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[2].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[2].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[2].active = atoi(fields[i++].c_str());
-    potRobList2.robList[2].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[2].center.y = atof(fields[i++].c_str());
-    potRobList2.robList[3].id = atoi(fields[i++].c_str());
-    potRobList2.robList[3].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[3].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[3].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[3].active = atoi(fields[i++].c_str());
-    potRobList2.robList[3].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[3].center.y = atof(fields[i++].c_str());
-    potRobList2.robList[4].id = atoi(fields[i++].c_str());
-    potRobList2.robList[4].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[4].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[4].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[4].active = atoi(fields[i++].c_str());
-    potRobList2.robList[4].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[4].center.y = atof(fields[i++].c_str());
-
-    potRobList2.robList[5].id = atoi(fields[i++].c_str());
-    potRobList2.robList[5].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[5].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[5].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[5].active = atoi(fields[i++].c_str());
-    potRobList2.robList[5].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[5].center.y = atof(fields[i++].c_str());
-
+    
+    for (int j=0;j<node_number;j++){    
+        
+    potRobList2.robList[j].id = atoi(fields[i++].c_str());
+    potRobList2.robList[j].coord.x = atof(fields[i++].c_str());
+    potRobList2.robList[j].coord.y = atof(fields[i++].c_str());
+    potRobList2.robList[j].lost = atoi(fields[i++].c_str());
+    potRobList2.robList[j].active = atoi(fields[i++].c_str());
+    potRobList2.robList[j].center.x = atof(fields[i++].c_str());
+    potRobList2.robList[j].center.y = atof(fields[i++].c_str());
+    
+    }
     timestamp2 = msg->stamp;
 //
 //          for (int i=0; i<robMax;i++)
@@ -784,6 +720,24 @@ void gui_builder() {
 //
 //}
 
+ int bestMeasure(int x_i, int y_i, int x_j, int y_j,int i,int j){
+    
+    int x_c= 1280/2;
+    int y_c= 1024;
+   float result_i = 0;
+   float result_j = 0;
+   result_i = sqrt((x_c-x_i)^2  + (y_c-y_i)^2);
+   result_j = sqrt((x_c-x_j)^2  + (y_c-y_j)^2);
+   printf("distanza i: %.2f  \n distanza j:%.2f \n",result_i,result_j);
+   if(result_i<=result_j){
+       //il robot è più vicino alla telecamera 1
+       return i;
+   } else
+       return j;
+       
+    
+}
+
 RobotList deleteDuplicate() {
 
     RobotList fusion; //copio roblist1 e inserisco in coda i 
@@ -808,7 +762,11 @@ RobotList deleteDuplicate() {
                     //   printf("diff [%d][%d], x: %2.2f y=%2.2f  ", i, j, diff_x, diff_y);
 
                     if ((diff_x <= 200) && (diff_y <= 200)) {
+                        
+                       j= bestMeasure(potRobList.robList[i].center.x,potRobList.robList[i].center.y,potRobList.robList[j].center.x,potRobList.robList[j].center.y,i,j);
+                        
                         potRobList.robList[j].hasDuplicate = 1;
+                        printf("i,j: %d, %d\n",i,j);
                         //   printf(".....");
                         //   printf("duplicato = %d\n ", j);
 
@@ -848,7 +806,6 @@ RobotList deleteDuplicate() {
         if (potRobList.robList[i].hasDuplicate == 0 && potRobList.robList[i].active == 1) { //
             //  printf("-->copio potRobList[%d] in fusion.robList[%d]\n ", i, n);
             fusion.robList[n].id = potRobList.robList[i].id;
-
             fusion.robList[n].coord.x = potRobList.robList[i].coord.x;
             fusion.robList[n].coord.y = potRobList.robList[i].coord.y;
             fusion.robList[n].center.y = potRobList.robList[i].center.y;
