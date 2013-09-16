@@ -7,7 +7,7 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="7">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="8">
         <file>
             <url>src/image_pub_labrob14.cpp</url>
             <bookmark id="3">
@@ -28,17 +28,22 @@
             <url>src/list_fusioner.cpp</url>
             <bookmark id="7">
                 <name/>
-                <line>269</line>
+                <line>166</line>
                 <key/>
             </bookmark>
             <bookmark id="6">
                 <name/>
-                <line>368</line>
+                <line>265</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>429</line>
+                <line>326</line>
+                <key/>
+            </bookmark>
+            <bookmark id="8">
+                <name/>
+                <line>684</line>
                 <key/>
             </bookmark>
         </file>

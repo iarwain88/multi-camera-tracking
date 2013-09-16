@@ -76,111 +76,56 @@ rosgraph_msgs::Clock framets;
 tutorialROSOpenCV::Stringts msg;
 RobotList avRobList;
 RobotList potRobList; //merge
+
 RobotList potRobList1;
 RobotList potRobList2;
+RobotList potRobList3;
 int robot_is_in_cam1[robMax];
 int robot_is_in_cam2[robMax];
+int robot_is_in_cam3[robMax];
+
+RobotList robList_temp[3]; //3 è il numero di webcam del sistema
+
 //RobotList avRobList3;
-ros::Time timestamp1;
-ros::Time timestamp2;
-//ros::Time timestamp3;
+ros::Time timestamp[3];
+
 
   int areaBlob = 50;
   int epsilon = 50;
 
-
 float distMatrix[robMax][robMax];
 float minDistMatrix[robMax][robMax];
-
 
 string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 
 
-
 IplImage* frame_c1 = 0;
 IplImage* frame_c2 = 0;
+IplImage* frame_c3 = 0;
 
 int exec_c1=0;
 int exec_c2=0;
+int exec_c3=0;
+
 int node_number =5;  //Numero di telecamere del sistema
 
 // %Tag(CALLBACK)%
 
-void roblistCallback1(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
-
-
-    vector <string> fields;
-
+void roblistCallback(const tutorialROSOpenCV::Stringts::ConstPtr& msg, int n) {
+  vector <string> fields;
     split_regex(fields, msg->data.c_str(), regex(","));
-
      int i=0;
-     
      for (int j=0;j<node_number;j++){
-    potRobList1.robList[j].id = atoi(fields[i++].c_str());
-    potRobList1.robList[j].coord.x = atof(fields[i++].c_str());
-    potRobList1.robList[j].coord.y = atof(fields[i++].c_str());
-    potRobList1.robList[j].lost = atoi(fields[i++].c_str());
-    potRobList1.robList[j].active = atoi(fields[i++].c_str());
-    potRobList1.robList[j].center.x = atof(fields[i++].c_str());
-    potRobList1.robList[j].center.y = atof(fields[i++].c_str());
-   
-     }
-    timestamp1 = msg->stamp;
-
-
-//          for (int i=0; i<robMax;i++){
-//        printf("--Robot cal1 %d : (%f, %f, %d)\n", i, potRobList1.robList[i].coord.x, potRobList1.robList[i].coord.y, potRobList1.robList[i].lost);
-//          }
-}
-
-// %Tag(CALLBACK)%
-
-void roblistCallback2(const tutorialROSOpenCV::Stringts::ConstPtr& msg) {
-
-
-    vector <string> fields;
-
-    split_regex(fields, msg->data.c_str(), regex(","));
-    int i=0;
-    
-    for (int j=0;j<node_number;j++){    
-        
-    potRobList2.robList[j].id = atoi(fields[i++].c_str());
-    potRobList2.robList[j].coord.x = atof(fields[i++].c_str());
-    potRobList2.robList[j].coord.y = atof(fields[i++].c_str());
-    potRobList2.robList[j].lost = atoi(fields[i++].c_str());
-    potRobList2.robList[j].active = atoi(fields[i++].c_str());
-    potRobList2.robList[j].center.x = atof(fields[i++].c_str());
-    potRobList2.robList[j].center.y = atof(fields[i++].c_str());
-    
+    robList_temp[n].robList[j].id = atoi(fields[i++].c_str());
+    robList_temp[n].robList[j].coord.x = atof(fields[i++].c_str());
+    robList_temp[n].robList[j].coord.y = atof(fields[i++].c_str());
+    robList_temp[n].robList[j].lost = atoi(fields[i++].c_str());
+    robList_temp[n].robList[j].active = atoi(fields[i++].c_str());
+    robList_temp[n].robList[j].center.x = atof(fields[i++].c_str());
+    robList_temp[n].robList[j].center.y = atof(fields[i++].c_str());
     }
-    timestamp2 = msg->stamp;
-//
-//          for (int i=0; i<robMax;i++)
-//        printf("Robot cal2 %d : (%f, %f, %f)\n", i, potRobList2.robList[i].coord.x, potRobList2.robList[i].coord.y, potRobList2.robList[i].lost);
-//       
+    timestamp[n] = msg->stamp;
 }
-
-//void makelistRobot(avRobList) {
-//
-//    ss1 = boost::str(boost::format("%f,%f,%f,%f,%f,") % avRobList.robList[0].id % avRobList.robList[0].coord.x % avRobList.robList[0].coord.y % avRobList.robList[0].lost % avRobList.robList[0].active);
-//    ss2 = boost::str(boost::format("%f,%f,%f,%f,%f,") % avRobList.robList[1].id % avRobList.robList[1].coord.x % avRobList.robList[1].coord.y % avRobList.robList[1].lost % avRobList.robList[1].active);
-//    ss3 = boost::str(boost::format("%f,%f,%f,%f,%f,") % avRobList.robList[2].id % avRobList.robList[2].coord.x % avRobList.robList[2].coord.y % avRobList.robList[2].lost % avRobList.robList[2].active);
-//    ss4 = boost::str(boost::format("%f,%f,%f,%f,%f,") % avRobList.robList[3].id % avRobList.robList[3].coord.x % avRobList.robList[3].coord.y % avRobList.robList[3].lost % avRobList.robList[3].active);
-//    ss5 = boost::str(boost::format("%f,%f,%f,%f,%f,") % avRobList.robList[4].id % avRobList.robList[4].coord.x % avRobList.robList[4].coord.y % avRobList.robList[4].lost % avRobList.robList[4].active);
-//    ss6 = boost::str(boost::format("%f,%f,%f,%f,%f") % avRobList.robList[5].id % avRobList.robList[5].coord.x % avRobList.robList[5].coord.y % avRobList.robList[5].lost % avRobList.robList[5].active);
-//
-//
-//    ss = ss1 + ss2 + ss3 + ss4 + ss5 + ss6; //dati dei robot 1 e 2 nella stessa stringa per poterli trasmettere
-//    msg.data = ss;
-//
-//    msg.stamp = framets.clock; //associo alla lista robot il timestamp del frame relativo
-//
-////    // %Tag(ROSCONSOLE)%
-////    ROS_INFO("%s", msg.data.c_str());
-////    // %EndTag(ROSCONSOLE)%
-//}
-
 
 
 void updateDistMatrix(int idAv, int idPot) {
@@ -396,53 +341,11 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
     }
 }
 
-void lists_merging(RobotList potRobList1, RobotList potRobList2) {
+void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRobList3) {
 
 
     potRobList.robNum = 0;
-    //    for (int i = 0; i < robMax; i++) {
-    //
-    //        potRobList.robList[i].active = 0;
-    //        potRobList.robList[i].center.x = 0;
-    //        potRobList.robList[i].center.y = 0;
-    //        potRobList.robList[i].coord.x = 0;
-    //        potRobList.robList[i].coord.y = 0;
-    //        potRobList.robList[i].hasDuplicate = 0;
-    //        potRobList.robList[i].head.x = 0;
-    //        potRobList.robList[i].head.y = 0;
-    //        potRobList.robList[i].id = i;
-    //        potRobList.robList[i].lost = 0;
-    //        potRobList.robList[i].orientation = 0;
-    //        potRobList.robList[i].tail.x = 0;
-    //        potRobList.robList[i].tail.y = 0;
-    //
-    //    }
-    //    
-
-
-    //    printf("[diff: %f] ", timestamp1.toSec() - timestamp2.toSec());
-    //    printf("[%f] ", timestamp1.toSec());
-    //    printf("[%f]\n ", timestamp2.toSec());
-
-    //printf("potenziali \n"); 
-
-    //    for (int i = 0; i < robMax; i++) {
-    //
-    //            //  printf("[%f] ", timestamp1.toSec());
-    //            printf("pot1_Robot %d : (%f, %f)\n", potRobList1.robList[i].id, potRobList1.robList[i].coord.x, potRobList1.robList[i].coord.y);
-    //        }
-    //     for (int i = 0; i < robMax; i++) {
-    //
-    //            //  printf("[%f] ", timestamp1.toSec());
-    //            printf("pot2_Robot %d : (%f, %f)\n", potRobList2.robList[i].id, potRobList2.robList[i].coord.x, potRobList2.robList[i].coord.y);
-    //        }
-
-    //    for (int i = 0; i < robMax; i++) {
-    //
-    //        printf("%d;", potRobList1.robList[i].active);
-    //
-    //    }
-    //    printf("\n");
+    
     int n = 0; 
     
    // printf("azzero presenza robot in cam \n");
@@ -450,6 +353,7 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
     for (int i = 0; i < robMax; i++) {
     robot_is_in_cam1[i] = 0;
     robot_is_in_cam2[i] = 0;
+    robot_is_in_cam3[i] = 0;
    
         }
     
@@ -491,6 +395,29 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2) {
             potRobList.robList[n].coord.y = potRobList2.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList2.robList[i].lost;
             potRobList.robList[n].active = potRobList2.robList[i].active;
+            potRobList.robList[n].hasDuplicate = 0;
+            robot_is_in_cam2[i] = 1;
+            potRobList.robNum++;
+
+            n++;
+            //   }
+        } 
+    }
+    
+    for (int i = 0; i < robMax; i++) {
+
+
+        if ((potRobList3.robList[i].active) == 1) {
+            // if (potRobList3.robList[i].coord.y > 1200) {
+
+            potRobList.robList[n].id = potRobList3.robList[i].id;
+            potRobList.robList[n].center.x = potRobList3.robList[i].center.x;
+            potRobList.robList[n].center.y = potRobList3.robList[i].center.y;
+            // printf("prova: %f",potRobList.robList[n].center.y );
+            potRobList.robList[n].coord.x = potRobList3.robList[i].coord.x;
+            potRobList.robList[n].coord.y = potRobList3.robList[i].coord.y;
+            potRobList.robList[n].lost = potRobList3.robList[i].lost;
+            potRobList.robList[n].active = potRobList3.robList[i].active;
             potRobList.robList[n].hasDuplicate = 0;
             robot_is_in_cam2[i] = 1;
             potRobList.robNum++;
@@ -571,9 +498,6 @@ void c1imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
     }
 }
 
-
-//this function is called everytime a new image is published
-
 void c2imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
 
 
@@ -625,7 +549,63 @@ void c2imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
         // printf("ok_c2\n");
         cvReleaseImage(&frame);
         //   printf("callback2\n");
-        exec_c1 = 1;
+        exec_c2 = 1;
+
+    }
+}
+
+void c3imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
+
+
+    if (exec_c3 == 0) {
+
+        //Convert from the ROS image message to a CvImage suitable for
+        //working with OpenCV for processing
+
+        cv_bridge::CvImagePtr cv_ptr;
+        try {
+            //Always copy, returning a mutable CvImage
+            //OpenCV expects color images to use BGR channel order.
+            cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+        } catch (cv_bridge::Exception& e) {
+            //if there is an error during conversion, display it
+            ROS_ERROR("cv_bridge exception: %s", e.what());
+            return;
+        }
+
+        IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
+
+
+
+        //print robot id in immagine
+
+        //          CvPoint point  = cvPointFrom32f(cordin);
+
+        //  cvNamedWindow("id", CV_WINDOW_NORMAL);
+        // cvResizeWindow("id", 320, 280);
+
+
+        //    CvPoint point;
+        //
+        //    //  CvPoint2D32f cordin;
+        //    //        cordin.x= potRobList.robList[0].center.x;
+        //    //        cordin.y= potRobList.robList[0].center.y;
+        //
+        //    point.x = 100;
+        //    point.y = 100;
+        //
+
+        // char str[200];
+        // sprintf(str, "1");
+        //  cv::Mat image11(frame);
+        // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
+        //  cvShowImage("id", frame);
+
+        frame_c3 = cvCloneImage(frame);
+        // printf("ok_c2\n");
+        cvReleaseImage(&frame);
+        //   printf("callback2\n");
+        exec_c3 = 1;
 
     }
 }
@@ -723,7 +703,7 @@ void gui_builder() {
  int bestMeasure(int x_i, int y_i, int x_j, int y_j,int i,int j){
     
     int x_c= 1280/2;
-    int y_c= 1024;
+    int y_c= 1024; //720
    float result_i = 0;
    float result_j = 0;
    result_i = sqrt((x_c-x_i)^2  + (y_c-y_i)^2);
@@ -740,8 +720,7 @@ void gui_builder() {
 
 RobotList deleteDuplicate() {
 
-    RobotList fusion; //copio roblist1 e inserisco in coda i 
-    // robot non doppi presenti nella seconda lista
+    RobotList fusion; 
     // fusion.init = 0;
 
 
@@ -922,6 +901,7 @@ void putIdOnImages() {
     }
     cvShowImage("id1", frame_c1);
     cvShowImage("id2", frame_c2);
+    
 }
 
 int main(int argc, char **argv) {
@@ -938,16 +918,20 @@ int main(int argc, char **argv) {
     image_transport::ImageTransport it(nh);
 
 
+    ros::Subscriber sub1 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c1", 100, boost::bind(roblistCallback, _1, 1) );
+ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c2", 100, boost::bind(roblistCallback, _1, 2) );
+//ros::Subscriber sub3 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c3", 100, boost::bind(roblistCallback, _1, 3) );
 
     // %Tag(SUBSCRIBER)%
-    ros::Subscriber sub1 = nh.subscribe("robList_labrob14_c1", 100, roblistCallback1);
-    ros::Subscriber sub2 = nh.subscribe("robList_labrob14_c2", 100, roblistCallback2);
+   // ros::Subscriber sub1 = nh.subscribe("robList_labrob14_c1", 100, roblistCallback1);
+   // ros::Subscriber sub2 = nh.subscribe("robList_labrob14_c2", 100, roblistCallback2);
+   // ros::Subscriber sub3 = nh.subscribe("robList_labrob14_c2", 100, roblistCallback3);
 
     //ros::Subscriber sub = nh.subscribe(imagetopic, 1, imageCallback);
     // image_transport::Subscriber sub = it.subscribe("/camera2_labrob14/RGB", 1, c2imageCallback, image_transport::TransportHints::TransportHints("compressed"));
     image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 10, c1imageCallback);
     image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 10, c2imageCallback);
-
+  ///  image_transport::Subscriber sub_C3 = it.subscribe("/camera2_labrob14/RGB", 10, c3imageCallback);
 
     // %EndTag(SUBSCRIBER)%
 
@@ -971,7 +955,7 @@ int main(int argc, char **argv) {
 
 
         //unisco le liste con stesso timestamp e pubblico la lista risultante
-        lists_merging(potRobList1, potRobList2);
+        lists_merging(robList_temp[1], robList_temp[2], robList_temp[3]);
         printf("---------------------------\n");
         fusion1 = deleteDuplicate();
 
@@ -1029,9 +1013,12 @@ int main(int argc, char **argv) {
 
         // if (frame_c2 != 0){
         cvReleaseImage(&frame_c2);
-        exec_c1 = 0;
+        exec_c2 = 0;
         //  printf("rilasciato f2\n");
         //  }
+        
+        cvReleaseImage(&frame_c3);
+        exec_c3 = 0;
 
         r.sleep();
 
