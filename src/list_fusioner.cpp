@@ -99,13 +99,14 @@ float minDistMatrix[robMax][robMax];
 string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 
 
-IplImage* frame_c1 = 0;
-IplImage* frame_c2 = 0;
-IplImage* frame_c3 = 0;
+IplImage* frame_c[3] ={ 0,0,0};
+//IplImage* frame_c2 = 0;
+//IplImage* frame_c3 = 0;
 
-int exec_c1=0;
-int exec_c2=0;
-int exec_c3=0;
+int exec_c[3] = {0,0,0};
+//int exec_c1 =0 ;
+//int exec_c2=0;
+//int exec_c3=0;
 
 int node_number =5;  //Numero di telecamere del sistema
 
@@ -446,9 +447,9 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRob
 
 //this function is called everytime a new image is published
 
-void c1imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
+void imageCallback(const sensor_msgs::ImageConstPtr& original_image, int n) {
 
-    if (exec_c1 == 0) {
+    if (exec_c[n] == 0) {
 
 
         //Convert from the ROS image message to a CvImage suitable for
@@ -491,124 +492,13 @@ void c1imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
         // //   cvShowImage("id2", frame);
 
         /*decommentare se merge immagini decommentato*/
-        frame_c1 = cvCloneImage(frame);
+        frame_c[n] = cvCloneImage(frame);
         //  printf("ok_C1\n");
         //   printf("callback1\n");
         cvReleaseImage(&frame);
     }
 }
 
-void c2imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
-
-
-    if (exec_c2 == 0) {
-
-        //Convert from the ROS image message to a CvImage suitable for
-        //working with OpenCV for processing
-
-        cv_bridge::CvImagePtr cv_ptr;
-        try {
-            //Always copy, returning a mutable CvImage
-            //OpenCV expects color images to use BGR channel order.
-            cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
-        } catch (cv_bridge::Exception& e) {
-            //if there is an error during conversion, display it
-            ROS_ERROR("cv_bridge exception: %s", e.what());
-            return;
-        }
-
-        IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
-
-
-
-        //print robot id in immagine
-
-        //          CvPoint point  = cvPointFrom32f(cordin);
-
-        //  cvNamedWindow("id", CV_WINDOW_NORMAL);
-        // cvResizeWindow("id", 320, 280);
-
-
-        //    CvPoint point;
-        //
-        //    //  CvPoint2D32f cordin;
-        //    //        cordin.x= potRobList.robList[0].center.x;
-        //    //        cordin.y= potRobList.robList[0].center.y;
-        //
-        //    point.x = 100;
-        //    point.y = 100;
-        //
-
-        // char str[200];
-        // sprintf(str, "1");
-        //  cv::Mat image11(frame);
-        // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
-        //  cvShowImage("id", frame);
-
-        frame_c2 = cvCloneImage(frame);
-        // printf("ok_c2\n");
-        cvReleaseImage(&frame);
-        //   printf("callback2\n");
-        exec_c2 = 1;
-
-    }
-}
-
-void c3imageCallback(const sensor_msgs::ImageConstPtr& original_image) {
-
-
-    if (exec_c3 == 0) {
-
-        //Convert from the ROS image message to a CvImage suitable for
-        //working with OpenCV for processing
-
-        cv_bridge::CvImagePtr cv_ptr;
-        try {
-            //Always copy, returning a mutable CvImage
-            //OpenCV expects color images to use BGR channel order.
-            cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
-        } catch (cv_bridge::Exception& e) {
-            //if there is an error during conversion, display it
-            ROS_ERROR("cv_bridge exception: %s", e.what());
-            return;
-        }
-
-        IplImage* frame = cvCloneImage(&(IplImage) cv_ptr->image);
-
-
-
-        //print robot id in immagine
-
-        //          CvPoint point  = cvPointFrom32f(cordin);
-
-        //  cvNamedWindow("id", CV_WINDOW_NORMAL);
-        // cvResizeWindow("id", 320, 280);
-
-
-        //    CvPoint point;
-        //
-        //    //  CvPoint2D32f cordin;
-        //    //        cordin.x= potRobList.robList[0].center.x;
-        //    //        cordin.y= potRobList.robList[0].center.y;
-        //
-        //    point.x = 100;
-        //    point.y = 100;
-        //
-
-        // char str[200];
-        // sprintf(str, "1");
-        //  cv::Mat image11(frame);
-        // putText(image11, str, point, FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255));
-        //  cvShowImage("id", frame);
-
-        frame_c3 = cvCloneImage(frame);
-        // printf("ok_c2\n");
-        cvReleaseImage(&frame);
-        //   printf("callback2\n");
-        exec_c3 = 1;
-
-    }
-}
 
 void gui_builder() {
 
@@ -883,12 +773,12 @@ void putIdOnImages() {
 
         if (robot_is_in_cam1[i] == 1) {
        //      printf("rob %d in cam 1 point: %d %d \n", idtemp, point.x, point.y);
-            cv::Mat image11(frame_c1);
+            cv::Mat image11(frame_c[1]);
             putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
 
         } else  {
           //  printf("rob %d in cam 2 point: %d %d\n", idtemp, point.x, point.y);
-            cv::Mat image11(frame_c2);
+            cv::Mat image11(frame_c[2]);
             putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
 
         }
@@ -899,8 +789,8 @@ void putIdOnImages() {
         //      }
 
     }
-    cvShowImage("id1", frame_c1);
-    cvShowImage("id2", frame_c2);
+    cvShowImage("id1", frame_c[1]);
+    cvShowImage("id2", frame_c[2]);
     
 }
 
@@ -929,8 +819,8 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
     //ros::Subscriber sub = nh.subscribe(imagetopic, 1, imageCallback);
     // image_transport::Subscriber sub = it.subscribe("/camera2_labrob14/RGB", 1, c2imageCallback, image_transport::TransportHints::TransportHints("compressed"));
-    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 10, c1imageCallback);
-    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 10, c2imageCallback);
+    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 10, boost::bind(imageCallback, _1, 1));
+    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 10, boost::bind(imageCallback, _1, 2));
   ///  image_transport::Subscriber sub_C3 = it.subscribe("/camera2_labrob14/RGB", 10, c3imageCallback);
 
     // %EndTag(SUBSCRIBER)%
@@ -1006,19 +896,21 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         cv::waitKey(10);
 
         //  if (frame_c1 != 0){
-        cvReleaseImage(&frame_c1);
-        exec_c1 = 0;
+        for (int i=0;i<=3;i++){
+        cvReleaseImage(&frame_c[i]);
+        exec_c[i] = 0;
+        }
         //  printf("rilasciato f1\n");
         //   }
 
-        // if (frame_c2 != 0){
-        cvReleaseImage(&frame_c2);
-        exec_c2 = 0;
-        //  printf("rilasciato f2\n");
-        //  }
-        
-        cvReleaseImage(&frame_c3);
-        exec_c3 = 0;
+//        // if (frame_c2 != 0){
+//        cvReleaseImage(&frame_c2);
+//        exec_c2 = 0;
+//        //  printf("rilasciato f2\n");
+//        //  }
+//        
+//        cvReleaseImage(&frame_c3);
+//        exec_c3 = 0;
 
         r.sleep();
 
