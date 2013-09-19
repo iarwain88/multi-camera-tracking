@@ -78,5 +78,3 @@ target_link_libraries(cam2_labrob14_pub  blob)
 
 #target_link_libraries(pub_sciame  blob)
 
-
-#rosbuild_add_library(${PROJECT_NAME} src/compressed_publisher.h)

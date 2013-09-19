@@ -46,10 +46,13 @@
 #include "std_msgs/Header.h"
 #include <rosgraph_msgs/Clock.h>
 #include <tutorialROSOpenCV/Stringts.h>
+
+
 const int robMax = 6;
 using namespace std;
 using namespace boost;
 namespace enc = sensor_msgs::image_encodings;
+
 
 typedef struct {
     CvPoint2D32f head;
@@ -84,14 +87,17 @@ rosgraph_msgs::Clock framets;
 tutorialROSOpenCV::Stringts msg;
 string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 
+
+
+
 void makelistRobot() {
 
-    ss1 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[0].id % potRobList.robList[0].coord.x % potRobList.robList[0].coord.y % potRobList.robList[0].lost % potRobList.robList[0].active % potRobList.robList[0].center.x % potRobList.robList[0].center.y);
-    ss2 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[1].id % potRobList.robList[1].coord.x % potRobList.robList[1].coord.y % potRobList.robList[1].lost % potRobList.robList[1].active % potRobList.robList[1].center.x % potRobList.robList[1].center.y);
-    ss3 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[2].id % potRobList.robList[2].coord.x % potRobList.robList[2].coord.y % potRobList.robList[2].lost % potRobList.robList[2].active % potRobList.robList[2].center.x % potRobList.robList[2].center.y);
-    ss4 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[3].id % potRobList.robList[3].coord.x % potRobList.robList[3].coord.y % potRobList.robList[3].lost % potRobList.robList[3].active % potRobList.robList[3].center.x % potRobList.robList[3].center.y);
-    ss5 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[4].id % potRobList.robList[4].coord.x % potRobList.robList[4].coord.y % potRobList.robList[4].lost % potRobList.robList[4].active % potRobList.robList[4].center.x % potRobList.robList[4].center.y);
-    ss6 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f") % potRobList.robList[5].id % potRobList.robList[5].coord.x % potRobList.robList[5].coord.y % potRobList.robList[5].lost % potRobList.robList[5].active % potRobList.robList[5].center.x % potRobList.robList[5].center.y);
+    ss1 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[0].id % potRobList.robList[0].coord.x % potRobList.robList[0].coord.y % potRobList.robList[0].lost % potRobList.robList[0].active % potRobList.robList[0].center.x % potRobList.robList[0].center.y % potRobList.robList[0].orientation);
+    ss2 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[1].id % potRobList.robList[1].coord.x % potRobList.robList[1].coord.y % potRobList.robList[1].lost % potRobList.robList[1].active % potRobList.robList[1].center.x % potRobList.robList[1].center.y % potRobList.robList[1].orientation);
+    ss3 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[2].id % potRobList.robList[2].coord.x % potRobList.robList[2].coord.y % potRobList.robList[2].lost % potRobList.robList[2].active % potRobList.robList[2].center.x % potRobList.robList[2].center.y % potRobList.robList[2].orientation);
+    ss4 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[3].id % potRobList.robList[3].coord.x % potRobList.robList[3].coord.y % potRobList.robList[3].lost % potRobList.robList[3].active % potRobList.robList[3].center.x % potRobList.robList[3].center.y % potRobList.robList[3].orientation);
+    ss5 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f,%f,") % potRobList.robList[4].id % potRobList.robList[4].coord.x % potRobList.robList[4].coord.y % potRobList.robList[4].lost % potRobList.robList[4].active % potRobList.robList[4].center.x % potRobList.robList[4].center.y % potRobList.robList[4].orientation);
+    ss6 = boost::str(boost::format("%f,%f,%f,%f,%f,%f,%f%f") % potRobList.robList[5].id % potRobList.robList[5].coord.x % potRobList.robList[5].coord.y % potRobList.robList[5].lost % potRobList.robList[5].active % potRobList.robList[5].center.x % potRobList.robList[5].center.y % potRobList.robList[5].orientation);
 
     ss = ss1 + ss2 + ss3 + ss4 + ss5 + ss6; //dati dei robot 1 e 2 nella stessa stringa per poterli trasmettere
     msg.data = ss;
@@ -585,7 +591,7 @@ int main(int argc, char **argv) {
     //  ros::Subscriber sub = nh.subscribe("robList", 100, roblistCallback);
     //// %EndTag(SUBSCRIBER)%
 
-    ros::Publisher list_pub = nh.advertise<tutorialROSOpenCV::Stringts > ("robList_labrob14_c1", 100);
+    ros::Publisher list_pub = nh.advertise<tutorialROSOpenCV::Stringts > ("robList_labrob14_c1", 10);
     // ros::Publisher timestamp_pub = nh.advertise<rosgraph_msgs::Clock > ("timestamp", 10);
 
     //advertise the video on the path below
@@ -708,9 +714,6 @@ int main(int argc, char **argv) {
 
 
 
-
-
-
       list_pub.publish(msg);
 
 
@@ -730,7 +733,7 @@ int main(int argc, char **argv) {
 
 
         //Wait 10mS
-        int c = cvWaitKey(5);
+        int c = cvWaitKey(10);
         //If 'ESC' is pressed, break the loop
         if ((char) c == 27) break;
         if (!(ros::ok())) {

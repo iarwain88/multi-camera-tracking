@@ -37,7 +37,9 @@
 #include "opencv2/stitching/stitcher.hpp"
 
 #include <rosgraph_msgs/Clock.h>
+
 #include <tutorialROSOpenCV/Stringts.h>
+#include <tf/transform_broadcaster.h>
 #define MAX_LOST  100000000
 using namespace std;
 using namespace boost;
@@ -124,6 +126,7 @@ void roblistCallback(const tutorialROSOpenCV::Stringts::ConstPtr& msg, int n) {
     robList_temp[n].robList[j].active = atoi(fields[i++].c_str());
     robList_temp[n].robList[j].center.x = atof(fields[i++].c_str());
     robList_temp[n].robList[j].center.y = atof(fields[i++].c_str());
+    robList_temp[n].robList[j].orientation = atof(fields[i++].c_str());
     }
     timestamp[n] = msg->stamp;
 }
@@ -371,6 +374,7 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRob
             potRobList.robList[n].coord.y = potRobList1.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList1.robList[i].lost;
             potRobList.robList[n].active = potRobList1.robList[i].active;
+            potRobList.robList[n].orientation = potRobList1.robList[i].orientation;
             potRobList.robList[n].hasDuplicate = 0;
             robot_is_in_cam1[i] = 1;
             potRobList.robNum++;
@@ -396,6 +400,7 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRob
             potRobList.robList[n].coord.y = potRobList2.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList2.robList[i].lost;
             potRobList.robList[n].active = potRobList2.robList[i].active;
+            potRobList.robList[n].orientation = potRobList2.robList[i].orientation;
             potRobList.robList[n].hasDuplicate = 0;
             robot_is_in_cam2[i] = 1;
             potRobList.robNum++;
@@ -419,6 +424,7 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRob
             potRobList.robList[n].coord.y = potRobList3.robList[i].coord.y;
             potRobList.robList[n].lost = potRobList3.robList[i].lost;
             potRobList.robList[n].active = potRobList3.robList[i].active;
+            potRobList.robList[n].orientation = potRobList3.robList[i].orientation;
             potRobList.robList[n].hasDuplicate = 0;
             robot_is_in_cam2[i] = 1;
             potRobList.robNum++;
@@ -598,7 +604,7 @@ void gui_builder() {
    float result_j = 0;
    result_i = sqrt((x_c-x_i)^2  + (y_c-y_i)^2);
    result_j = sqrt((x_c-x_j)^2  + (y_c-y_j)^2);
-   printf("distanza i: %.2f  \n distanza j:%.2f \n",result_i,result_j);
+  // printf("distanza i: %.2f  \n distanza j:%.2f \n",result_i,result_j);
    if(result_i<=result_j){
        //il robot è più vicino alla telecamera 1
        return i;
@@ -635,7 +641,7 @@ RobotList deleteDuplicate() {
                        j= bestMeasure(potRobList.robList[i].center.x,potRobList.robList[i].center.y,potRobList.robList[j].center.x,potRobList.robList[j].center.y,i,j);
                         
                         potRobList.robList[j].hasDuplicate = 1;
-                        printf("i,j: %d, %d\n",i,j);
+                       // printf("i,j: %d, %d\n",i,j);
                         //   printf(".....");
                         //   printf("duplicato = %d\n ", j);
 
@@ -681,6 +687,7 @@ RobotList deleteDuplicate() {
             fusion.robList[n].center.x = potRobList.robList[i].center.x;
             fusion.robList[n].lost = potRobList.robList[i].lost;
             fusion.robList[n].active = potRobList.robList[i].active;
+            fusion.robList[n].orientation = potRobList.robList[i].orientation;
 
 
             n++;
@@ -707,6 +714,7 @@ RobotList deleteDuplicate() {
         fusion.robList[n].center.y = 0;
         fusion.robList[n].lost = 0;
         fusion.robList[n].active = 0;
+        fusion.robList[n].orientation = 0;
         n++;
     }
 
@@ -718,80 +726,80 @@ RobotList deleteDuplicate() {
 
 void putIdOnImages() {
 
-
-    /*
-     
-     funziona solo per la prima immagine perchè in avroblist ho solo le coordinate
-     provenienti da una sola telecamera, quindi quando faccio il confronto 
-     tra le coordinate dei potenziali e degli av trovo solo quelli della prima
-     telecamera (perchè quando elimino i duplicati  elimino i dati della seconda camera
-     (se ho le coordinate da entrambe le webcam*/
-
-    CvPoint point;
-
-    cvNamedWindow("id1", CV_WINDOW_NORMAL);
-    cvResizeWindow("id1", 320, 280);
-    cvNamedWindow("id2", CV_WINDOW_NORMAL);
-    cvResizeWindow("id2", 320, 280);
-
-
-    int idtemp;
-    int p = 0;
-
-    float diff_x;
-    float diff_y;
-
-    for (int i = 0; i < robMax; i++) {
-        point.x = 0;
-        point.y = 0;
-
-           if (potRobList.robList[i].active) {
-        point.x = potRobList.robList[i].center.x;
-        point.y = potRobList.robList[i].center.y;
-
-        p = 0;
-
-        while (p < robMax) {
-            //     printf(" potRobList %d -- avRobList %d --", i,p);
-            idtemp = 0;
-            diff_x = abs(potRobList.robList[i].coord.x - avRobList.robList[p].coord.x);
-            diff_y = abs(potRobList.robList[i].coord.y - avRobList.robList[p].coord.y);
-
-            //   printf("diff %f, %f\n",diff_x,diff_y);
-            if ((diff_x <= 200) && (diff_y <= 200)) {
-                idtemp = avRobList.robList[p].id;
-                //  printf("id:%d \n", idtemp);
-                break;
-            } else p++;
-        }
-
-
-
-
-        std::stringstream s;
-        s << idtemp;
-
-        if (robot_is_in_cam1[i] == 1) {
-       //      printf("rob %d in cam 1 point: %d %d \n", idtemp, point.x, point.y);
-            cv::Mat image11(frame_c[1]);
-            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
-
-        } else  {
-          //  printf("rob %d in cam 2 point: %d %d\n", idtemp, point.x, point.y);
-            cv::Mat image11(frame_c[2]);
-            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
-
-        }
-
-
-        }
-
-        //      }
-
-    }
-    cvShowImage("id1", frame_c[1]);
-    cvShowImage("id2", frame_c[2]);
-    
+//
+//    /*
+//     
+//     funziona solo per la prima immagine perchè in avroblist ho solo le coordinate
+//     provenienti da una sola telecamera, quindi quando faccio il confronto 
+//     tra le coordinate dei potenziali e degli av trovo solo quelli della prima
+//     telecamera (perchè quando elimino i duplicati  elimino i dati della seconda camera
+//     (se ho le coordinate da entrambe le webcam*/
+//
+//    CvPoint point;
+//
+//   // cvNamedWindow("id1", CV_WINDOW_NORMAL);
+//   // cvResizeWindow("id1", 320, 280);
+//   // cvNamedWindow("id2", CV_WINDOW_NORMAL);
+//   // cvResizeWindow("id2", 320, 280);
+//
+//
+//    int idtemp;
+//    int p = 0;
+//
+//    float diff_x;
+//    float diff_y;
+//
+//    for (int i = 0; i < robMax; i++) {
+//        point.x = 0;
+//        point.y = 0;
+//
+//           if (potRobList.robList[i].active) {
+//        point.x = potRobList.robList[i].center.x;
+//        point.y = potRobList.robList[i].center.y;
+//
+//        p = 0;
+//
+//        while (p < robMax) {
+//            //     printf(" potRobList %d -- avRobList %d --", i,p);
+//            idtemp = 0;
+//            diff_x = abs(potRobList.robList[i].coord.x - avRobList.robList[p].coord.x);
+//            diff_y = abs(potRobList.robList[i].coord.y - avRobList.robList[p].coord.y);
+//
+//            //   printf("diff %f, %f\n",diff_x,diff_y);
+//            if ((diff_x <= 200) && (diff_y <= 200)) {
+//                idtemp = avRobList.robList[p].id;
+//                //  printf("id:%d \n", idtemp);
+//                break;
+//            } else p++;
+//        }
+//
+//
+//
+//
+//        std::stringstream s;
+//        s << idtemp;
+//
+//        if (robot_is_in_cam1[i] == 1) {
+//       //      printf("rob %d in cam 1 point: %d %d \n", idtemp, point.x, point.y);
+//            cv::Mat image11(frame_c[1]);
+//            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+//
+//        } else  {
+//          //  printf("rob %d in cam 2 point: %d %d\n", idtemp, point.x, point.y);
+//            cv::Mat image11(frame_c[2]);
+//            putText(image11, s.str(), point, FONT_HERSHEY_SIMPLEX, 5, Scalar(0, 0, 255), 4);
+//
+//        }
+//
+//
+//        }
+//
+//        //      }
+//
+//    }
+//  //  cvShowImage("id1", frame_c[1]);
+//   // cvShowImage("id2", frame_c[2]);
+//    
 }
 
 int main(int argc, char **argv) {
@@ -808,8 +816,8 @@ int main(int argc, char **argv) {
     image_transport::ImageTransport it(nh);
 
 
-    ros::Subscriber sub1 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c1", 100, boost::bind(roblistCallback, _1, 1) );
-ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c2", 100, boost::bind(roblistCallback, _1, 2) );
+    ros::Subscriber sub1 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c1", 10, boost::bind(roblistCallback, _1, 1) );
+ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c2", 10, boost::bind(roblistCallback, _1, 2) );
 //ros::Subscriber sub3 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob14_c3", 100, boost::bind(roblistCallback, _1, 3) );
 
     // %Tag(SUBSCRIBER)%
@@ -819,8 +827,8 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
     //ros::Subscriber sub = nh.subscribe(imagetopic, 1, imageCallback);
     // image_transport::Subscriber sub = it.subscribe("/camera2_labrob14/RGB", 1, c2imageCallback, image_transport::TransportHints::TransportHints("compressed"));
-    image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 10, boost::bind(imageCallback, _1, 1));
-    image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 10, boost::bind(imageCallback, _1, 2));
+  //  image_transport::Subscriber sub_C1 = it.subscribe("/camera1_labrob14/RGB", 1, boost::bind(imageCallback, _1, 1));
+  //  image_transport::Subscriber sub_C2 = it.subscribe("/camera2_labrob14/RGB", 1, boost::bind(imageCallback, _1, 2));
   ///  image_transport::Subscriber sub_C3 = it.subscribe("/camera2_labrob14/RGB", 10, c3imageCallback);
 
     // %EndTag(SUBSCRIBER)%
@@ -835,6 +843,8 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
     avRobList.robNum = 0;
     avRobList.init = 1;
     ros::Rate r(10); // 20 hz
+    
+       int i=0;
     // int c = 0;
     RobotList fusion1;
     while (ros::ok()) {
@@ -868,7 +878,7 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         updateRobotList(&avRobList, fusion1);
 
         for (int i = 0; i < robMax; i++) {
-            printf("POT_Robot %d : (%2.2f, %2.2f)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
+            printf("POT_Robot %d : (%2.2f, %2.2f)\n", i+1, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y);
         }
 
         //        for (int i = 0; i < robMax; i++) {
@@ -878,11 +888,34 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         //
         //
         for (int i = 0; i < robMax; i++) {
-            printf("AV_ROB %d : (%2.2f, %2.2f, %d)\n", i, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
+            printf("AV_ROB %d : (%2.2f, %2.2f, %d)\n", i+1, avRobList.robList[i].coord.x, avRobList.robList[i].coord.y, avRobList.robList[i].lost);
         }
 
-        putIdOnImages();
+      //  putIdOnImages();
+        
+        
+    
+         static tf::TransformBroadcaster br;
+         
+        tf::Transform transform;
 
+        std::stringstream ss;
+       
+       
+       for(int index=1;index<=3;index++){
+       
+        ss.str("");
+        ss << "/robot/" << index << "/base_link";
+                              
+        transform.setOrigin(tf::Vector3(avRobList.robList[index-1].coord.x / 1000, avRobList.robList[index-1].coord.y / 1000, 0));
+                transform.setRotation(tf::Quaternion(0, 0, avRobList.robList[index-1].orientation / 360 * 2 * M_PI));
+                br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", ss.str()));
+               
+       }       
+            cout << i++ <<endl;    
+               
+    
+ 
         // gui_builder();
         //mergeImage(); //vedere commento nel metodo
         //print robot id in immagine
@@ -896,7 +929,7 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         cv::waitKey(10);
 
         //  if (frame_c1 != 0){
-        for (int i=0;i<=3;i++){
+        for (int i=1;i<=3;i++){
         cvReleaseImage(&frame_c[i]);
         exec_c[i] = 0;
         }
@@ -918,5 +951,6 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
 
     }
+
 
 }

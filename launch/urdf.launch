@@ -1,0 +1,58 @@
+<launch>
+
+	
+<param name="saetta_vision_prefix" value="robot_"/>
+	<param name="saetta_vision_robnum" value="3" />
+	
+
+	<!-- == ROBOT 01 == -->
+
+		<group ns="robot/1">
+		<param name="tf_prefix" value="robot/1"/>
+		<param name="robot_description" command="$(find xacro)/xacro.py $(find tutorialROSOpenCV)/Saetta.urdf" />
+		
+		<!-- Robot State Publisher -->
+		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
+
+		<!-- Saetta Nodes -->
+
+
+		</group>
+	<!-- == END ROBOT 01 == -->
+
+<!-- == ROBOT 02 == -->
+
+		<group ns="robot/2">
+		<param name="tf_prefix" value="robot/2"/>
+		<param name="robot_description" command="$(find xacro)/xacro.py $(find tutorialROSOpenCV)/Saetta.urdf" />
+		
+		<!-- Robot State Publisher -->
+		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
+
+		<!-- Saetta Nodes -->
+
+
+		</group>
+	<!-- == END ROBOT 02 == -->
+
+<!-- == ROBOT 03 == -->
+
+		<group ns="robot/3">
+		<param name="tf_prefix" value="robot/3"/>
+		<param name="robot_description" command="$(find xacro)/xacro.py $(find tutorialROSOpenCV)/Saetta.urdf" />
+		
+		<!-- Robot State Publisher -->
+		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
+
+		<!-- Saetta Nodes -->
+
+
+		</group>
+	<!-- == END ROBOT 03 == -->
+
+
+	
+
+
+
+</launch>
