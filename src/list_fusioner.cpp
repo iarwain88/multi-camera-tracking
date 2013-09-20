@@ -839,7 +839,7 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
     // ros::Publisher list_pub = nh.advertise<tutorialROSOpenCV::Stringts > ("robList", 100);
 
-ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("odom1", 50),nh.advertise<nav_msgs::Odometry>("odom2", 50),nh.advertise<nav_msgs::Odometry>("odom3", 50),nh.advertise<nav_msgs::Odometry>("odom4", 50)}; 
+ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("robot_1/odom", 50),nh.advertise<nav_msgs::Odometry>("robot_2/odom", 50),nh.advertise<nav_msgs::Odometry>("robot_3/odom", 50),nh.advertise<nav_msgs::Odometry>("robot_4/odom", 50)}; 
 //odom_pub[1] = 
 //odom_pub[2]= nh.advertise<nav_msgs::Odometry>("odom2", 50);
 //odom_pub[3] = nh.advertise<nav_msgs::Odometry>("odom3", 50);
@@ -912,7 +912,7 @@ ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("odom1", 50),nh.a
         std::stringstream ss;
        std::stringstream sss;
        
-       for(int index=1;index<=3;index++){
+       for(int index=1;index<=robMax;index++){
        
         ss.str("");
         ss << "/robot/" << index << "/base_link";
