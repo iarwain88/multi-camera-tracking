@@ -101,7 +101,7 @@ float minDistMatrix[robMax][robMax];
 string ss, ss1, ss2, ss3, ss4, ss5, ss6;
 
 
-IplImage* frame_c[3] ={ 0,0,0};
+IplImage* frame_c[3] ={0,0,0};
 //IplImage* frame_c2 = 0;
 //IplImage* frame_c3 = 0;
 
@@ -343,11 +343,12 @@ void updateRobotList(RobotList *avRobList, RobotList potRobList) {
 
         }
     }
+  
 }
 
 void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRobList3) {
 
-
+    
     potRobList.robNum = 0;
     
     int n = 0; 
@@ -448,7 +449,7 @@ void lists_merging(RobotList potRobList1, RobotList potRobList2,RobotList potRob
     //    }
     //    printf("\n");
 
-
+  
 }
 
 //this function is called everytime a new image is published
@@ -598,6 +599,7 @@ void gui_builder() {
 
  int bestMeasure(int x_i, int y_i, int x_j, int y_j,int i,int j){
     
+       
     int x_c= 1280/2;
     int y_c= 1024; //720
    float result_i = 0;
@@ -638,9 +640,10 @@ RobotList deleteDuplicate() {
 
                     if ((diff_x <= 200) && (diff_y <= 200)) {
                         
-                       j= bestMeasure(potRobList.robList[i].center.x,potRobList.robList[i].center.y,potRobList.robList[j].center.x,potRobList.robList[j].center.y,i,j);
+                      
+                          
+                        potRobList.robList[bestMeasure(potRobList.robList[i].center.x,potRobList.robList[i].center.y,potRobList.robList[j].center.x,potRobList.robList[j].center.y,i,j)].hasDuplicate = 1;
                         
-                        potRobList.robList[j].hasDuplicate = 1;
                        // printf("i,j: %d, %d\n",i,j);
                         //   printf(".....");
                         //   printf("duplicato = %d\n ", j);
@@ -848,6 +851,7 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
     // int c = 0;
     RobotList fusion1;
     while (ros::ok()) {
+      
         //   printf("*********c:[%d]\n", c);
         //c++;
 
@@ -856,8 +860,9 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
         //unisco le liste con stesso timestamp e pubblico la lista risultante
         lists_merging(robList_temp[1], robList_temp[2], robList_temp[3]);
-        printf("---------------------------\n");
+        printf("------------%d---------------\n",i);
         fusion1 = deleteDuplicate();
+       
 
 
 
@@ -910,11 +915,10 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         transform.setOrigin(tf::Vector3(avRobList.robList[index-1].coord.x / 1000, avRobList.robList[index-1].coord.y / 1000, 0));
                 transform.setRotation(tf::Quaternion(0, 0, avRobList.robList[index-1].orientation / 360 * 2 * M_PI));
                 br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", ss.str()));
-               
+         
        }       
-            cout << i++ <<endl;    
                
-    
+        i++; //iteration counter
  
         // gui_builder();
         //mergeImage(); //vedere commento nel metodo
@@ -932,6 +936,7 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
         for (int i=1;i<=3;i++){
         cvReleaseImage(&frame_c[i]);
         exec_c[i] = 0;
+          
         }
         //  printf("rilasciato f1\n");
         //   }
