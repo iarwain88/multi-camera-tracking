@@ -40,6 +40,7 @@
 
 #include <tutorialROSOpenCV/Stringts.h>
 #include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
 #define MAX_LOST  100000000
 using namespace std;
 using namespace boost;
@@ -838,8 +839,11 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
 
     // ros::Publisher list_pub = nh.advertise<tutorialROSOpenCV::Stringts > ("robList", 100);
 
-
-
+ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("odom1", 50),nh.advertise<nav_msgs::Odometry>("odom2", 50),nh.advertise<nav_msgs::Odometry>("odom3", 50),nh.advertise<nav_msgs::Odometry>("odom4", 50)}; 
+//odom_pub[1] = 
+//odom_pub[2]= nh.advertise<nav_msgs::Odometry>("odom2", 50);
+//odom_pub[3] = nh.advertise<nav_msgs::Odometry>("odom3", 50);
+//odom_pub[4] = nh.advertise<nav_msgs::Odometry>("odom4", 50);
 
 
 
@@ -903,9 +907,10 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
          static tf::TransformBroadcaster br;
          
         tf::Transform transform;
+         tf::TransformBroadcaster odom_broadcaster;
 
         std::stringstream ss;
-       
+       std::stringstream sss;
        
        for(int index=1;index<=3;index++){
        
@@ -916,20 +921,59 @@ ros::Subscriber sub2 = nh.subscribe<tutorialROSOpenCV::Stringts>("robList_labrob
                 transform.setRotation(tf::Quaternion(0, 0, avRobList.robList[index-1].orientation / 360 * 2 * M_PI));
                 br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", ss.str()));
          
-       }       
+      
+        
+      ros::Time current_time;
+  current_time = ros::Time::now();
+  
+        //first, we'll publish the transform over tf
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = current_time;
+//    sss.str("");
+//    sss  << "/robot/" << index << "/odom";
+//    odom_trans.header.frame_id =  "odom";
+//    odom_trans.child_frame_id = "base_link";
+
+    odom_trans.transform.translation.x = avRobList.robList[index-1].coord.x / 1000;
+    odom_trans.transform.translation.y = avRobList.robList[index-1].coord.y / 1000;
+    odom_trans.transform.translation.z = 0.0;
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(avRobList.robList[index-1].orientation / 360 * 2 * M_PI);
+
+    odom_trans.transform.rotation = odom_quat;
+    //send the transform
+    odom_broadcaster.sendTransform(odom_trans);
+   
+    //next, we'll publish the odometry message over ROS
+    nav_msgs::Odometry odom;
+    odom.header.stamp = current_time;
+    odom.header.frame_id = "odom";
+
+    //set the position
+    odom.pose.pose.position.x = avRobList.robList[index-1].coord.x / 1000;;
+    odom.pose.pose.position.y = avRobList.robList[index-1].coord.y / 1000;;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+//    odom.child_frame_id = "base_link";
+//    odom.twist.twist.linear.x = vx;
+//    odom.twist.twist.linear.y = vy;
+//    odom.twist.twist.angular.z = vth;
+
+    //publish the message
+    odom_pub[index-1].publish(odom);
+
+        }       
                
         i++; //iteration counter
- 
-        // gui_builder();
-        //mergeImage(); //vedere commento nel metodo
-        //print robot id in immagine
-        //        
-        //          CvPoint point  = cvPointFrom32f(cordin); 
-        //           //printf("pix %.2f,%.2f\n", potRobList.robList[0].center.x,potRobList.robList[0].center.y);
-        //           // printf("pix %.2f,%.2f\n", potRobList.robList[1].center.x,potRobList.robList[1].center.y);
-        //    cvCircle(frame1,point,10, cvScalar(0, 0, 255), 10, 8, 0);
-        ////    cvCircle(imgFinal, point,10, cvScalar(0, 0, 255), 10, 8, 0);
-        //
+        
+      
+        
+        
+        
+        
+        
+        
         cv::waitKey(10);
 
         //  if (frame_c1 != 0){
