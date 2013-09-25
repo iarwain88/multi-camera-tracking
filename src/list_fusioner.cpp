@@ -912,8 +912,8 @@ ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("robot_1/odom", 5
         std::stringstream ss;
        std::stringstream sss;
        
-       for(int index=1;index<=robMax;index++){
-       
+       for(int index=1;index<=4;index++){
+        
         ss.str("");
         ss << "/robot/" << index << "/base_link";
                               
@@ -929,10 +929,10 @@ ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("robot_1/odom", 5
         //first, we'll publish the transform over tf
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = current_time;
-//    sss.str("");
-//    sss  << "/robot/" << index << "/odom";
-//    odom_trans.header.frame_id =  "odom";
-//    odom_trans.child_frame_id = "base_link";
+    sss.str("");
+    sss  << "/robot/" << index << "/odom";
+    odom_trans.header.frame_id =  "odom";
+    odom_trans.child_frame_id = "base_link";
 
     odom_trans.transform.translation.x = avRobList.robList[index-1].coord.x / 1000;
     odom_trans.transform.translation.y = avRobList.robList[index-1].coord.y / 1000;
@@ -961,10 +961,12 @@ ros::Publisher odom_pub[4] = {nh.advertise<nav_msgs::Odometry>("robot_1/odom", 5
 //    odom.twist.twist.angular.z = vth;
 
     //publish the message
+  
     odom_pub[index-1].publish(odom);
 
-        }       
-               
+//
+       }       
+//               
         i++; //iteration counter
         
       

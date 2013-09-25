@@ -74,7 +74,7 @@ typedef struct {
 // Currently Available Robots
 RobotList avRobList;
 RobotList potRobList;
-int areaBlob = 50;
+int areaBlob = 30;
 int epsilon = 50;
 
 
@@ -102,12 +102,12 @@ void makelistRobot() {
     // %Tag(ROSCONSOLE)%
    // ROS_INFO("%s", msg.data.c_str());
     // %EndTag(ROSCONSOLE)%
-
+printf("--------------------------------------------\n");
     for (int i = 0; i < robMax; i++){
         printf("Robot %d : (x:%2.2f, y:%2.2f,a: %d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].active);
         
     }
-printf("--------------------------------------------\n");
+
 }
 
 // %Tag(CALLBACK)%
@@ -388,11 +388,11 @@ int checkDistMarker(float a, float b) {
 
 
 //per immagine HSV
-CvScalar lowRed = cvScalar(0, 118, 154);
-CvScalar highRed = cvScalar(60, 256, 256);
+CvScalar lowRed = cvScalar(0, 156, 174);
+CvScalar highRed = cvScalar(43, 256, 256);
 
-CvScalar lowGreen = cvScalar(38, 65, 150);
-CvScalar highGreen = cvScalar(92, 152, 256);
+CvScalar lowGreen = cvScalar(38, 44, 156);
+CvScalar highGreen = cvScalar(85, 256, 256);
 //****************************************  
 
 

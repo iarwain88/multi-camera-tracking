@@ -107,12 +107,12 @@ void makelistRobot() {
     // %Tag(ROSCONSOLE)%
    // ROS_INFO("%s", msg.data.c_str());
     // %EndTag(ROSCONSOLE)%
-
-    for (int i = 0; i < robMax; i++){
+printf("---------------------------------------------------\n"); 
+   for (int i = 0; i < robMax; i++){
         printf("Robot %d : (x:%2.2f, y:%2.2f,a:%d)\n", i, potRobList.robList[i].coord.x, potRobList.robList[i].coord.y, potRobList.robList[i].active);
 
     }
-    printf("---------------------------------------------------\n");
+    
 }
 
 // %Tag(CALLBACK)%
@@ -538,6 +538,17 @@ IplImage* blobDetection2(IplImage* imgThreshRed, IplImage* imgThreshGreen) {
     // Matching The List of Potential Robots with previous List of Robots
     //    updateRobotListAndrea(&avRobList, potRobList);
     //  updateRobotList(&avRobList, potRobList);
+   
+    for(int i=0;i<robMax;i++){
+        if(potRobList.robList[i].center.y<320){
+            potRobList.robList[i].center.y=0;
+            potRobList.robList[i].center.x=0;
+            potRobList.robList[i].active=0;
+            potRobList.robList[0].id=0;
+            potRobList.robList[0].lost=0;
+            potRobList.robList[0].orientation=0;
+        }
+    }
     makelistRobot();
 
     /*
